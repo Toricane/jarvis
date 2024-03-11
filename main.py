@@ -9,7 +9,7 @@ from webcam import cam, take_pic
 from tts import tts
 import azurespeech
 from prompts import prompts
-from button import start_monitoring
+from button import wait_for_button, start_monitoring
 from gemini import model, conv
 
 from dotenv import load_dotenv
@@ -120,6 +120,8 @@ async def test(question: str, pic: Image.Image = None) -> None:
     logger.debug("Testing...")
     ...
 
+
+wait_for_button()
 
 loop = asyncio.new_event_loop()
 start_monitoring()

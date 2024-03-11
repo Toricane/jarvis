@@ -11,6 +11,12 @@ button_pressed = False
 button_thread: threading.Thread | None = None
 
 
+def wait_for_button():
+    button.wait_for_press()
+    button.wait_for_release()
+    print("Starting program...")
+
+
 def monitor_button():
     global button_pressed
 
