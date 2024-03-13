@@ -1,3 +1,7 @@
+*.png
+*.jpg
+run_jarvis.sh
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

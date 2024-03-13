@@ -53,6 +53,7 @@ def record_and_transcribe(
         recognizer.adjust_for_ambient_noise(source, 3)
 
     print("I am ready to record after you say 'Jarvis'. Say 'Jarvis' to activate.")
+    sounds.stt()
 
     try:
         while True:

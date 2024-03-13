@@ -36,6 +36,9 @@ def text_to_speech(text: str) -> None:
             print("Error details: {}".format(cancellation_details.error_details))
 
 
+if __name__ == "__main__":
+	text_to_speech("Hello! I am working.")
+
 # Starts speech recognition, and returns after a single utterance is recognized. The end of a
 # single utterance is determined by listening for silence at the end or until a maximum of 15
 # seconds of audio is processed.  The task returns the recognition text as result.

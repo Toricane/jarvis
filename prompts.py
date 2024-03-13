@@ -84,7 +84,3 @@ If you think the search results are not helpful, respond with "No."
     ),
     _internal=dict(),
 )
-
-print(
-    prompts["pic_relevance"].strip().format(question="What is the capital of France?")
-)

@@ -101,7 +101,7 @@ async def main(question: str, pic: Image.Image = None):
     # queue.put(final_response.text)
     print(final_response.parts)
     print("-----")
-    print(final_response.text)
+    print(final_response.text.replace("**", ""))
 
     azurespeech.text_to_speech(final_response.text.replace("**", ""))
 
