@@ -44,7 +44,7 @@ async def main(question: str, pic: Image.Image = None):
     model.use_vision()
 
     pic_relevance = await model.prompt("pic_relevance", pic, question=question)
-    pic_relevance = pic_relevance.text.lower()
+    pic_relevance = pic_relevance.lower()
 
     print(f"{pic_relevance=}")
 
