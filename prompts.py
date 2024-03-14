@@ -79,7 +79,7 @@ I searched Google for the question and found the following search results:
 '''
 
 If you can answer my question with accuracy and precision, respond with "Yes."
-If you cannot answer my question, but you want more information from a good search result, respond with "More information from website <number of the website>." For example, "More information from website 1." Replace the number accordingly.
+If you cannot answer my question, but you want more information from a good search result, respond with "More information from website <number of the website>." For example, "More information from website 1." Replace the number accordingly. No additional output is needed.
 If you think the search results are not helpful, respond with "No."
 """,
     ),
