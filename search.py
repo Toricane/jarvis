@@ -210,6 +210,7 @@ async def search(
         print("Yes")
     elif "more information" in response.lower():
         print("More information")
+        print(response)
         web_num = [num for num in range(1, 11) if str(num) in response.split()[-1]][
             0
         ] - 1
