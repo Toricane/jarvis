@@ -5,6 +5,7 @@ from PIL import Image
 from time import time
 
 from prompts import prompts
+from context import get_context
 
 from dotenv import load_dotenv
 from os import getenv
@@ -130,14 +131,17 @@ class Model:
         else:
             prompt = prompts[prompt_key]
 
-        return prompt.strip().format(**kwargs)
+        prompt = prompt.strip().format(**kwargs)
+        prompt += f"\n{get_context()}"
+
+        return prompt
 
     async def prompt(
         self,
         prompt_key: str,
         pic: Image.Image = None,
         resolve: bool = True,
-        **kwargs: str
+        **kwargs: str,
     ) -> str:
         """
         Asynchronously prompts the model.
@@ -172,7 +176,7 @@ class Model:
         prompt_key: str,
         pic: Image.Image = None,
         resolve: bool = True,
-        **kwargs: str
+        **kwargs: str,
     ) -> str:
         """
         Synchronously prompts the model.
