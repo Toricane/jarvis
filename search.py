@@ -211,9 +211,11 @@ async def search(
     elif "more information" in response.lower():
         print("More information")
         print(response)
-        web_num = [num for num in range(1, 11) if str(num) in response.split()[-1]][
-            0
-        ] - 1
+        web_num = [
+            num
+            for num in range(1, 11)
+            if str(num) in response.split("\n")[0].split()[-1]
+        ][0] - 1
         url = results[web_num]["url"]
         content = await get_main_content(url)
         cleaned_content = await cleanup(question, content, model, pic)
