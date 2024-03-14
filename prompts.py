@@ -17,6 +17,7 @@ I want to know whether or not you can answer the question accurately and precise
 For example, if the question is asking with relevant information in an attached photo, then you don't need to search unless you want to search for object names from the photo.
 If it's something conversational, such as "Hello" or something similar, then you don't need to search the internet.
 Use your common sense to see whether you can answer my question without search results.
+Approximations are not preferred if I can search the web and give you information to answer the question with accuracy and precision.
 
 Task:
 Respond with "yes" if you can answer my question without needing my internet search results with accuracy and precision.
