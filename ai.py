@@ -1,4 +1,5 @@
 import google.generativeai as genai
+from groq import Groq
 from enum import Enum
 from PIL import Image
 from time import time
@@ -11,6 +12,7 @@ from os import getenv
 load_dotenv()
 
 GEMINI: str = getenv("GEMINI")
+GROQ: str = getenv("GROQ")
 genai.configure(api_key=GEMINI)
 
 # don't want error due to 'safety' from gemini
@@ -26,7 +28,7 @@ class Role(Enum):
     """The role of the author of the message."""
 
     USER = "user"
-    AI = "model"
+    AI = "ai"
 
 
 class Message:
@@ -37,9 +39,14 @@ class Message:
         self.text = text
         self.created_at: float = time()
 
-    @property
-    def json(self):
-        return {"role": self.type.value, "parts": [self.text]}
+    def json(self, model):  # TODO: typehint
+        role = self.type.value
+        if role != "user":
+            role = "model" if isinstance(model, genai.GenerativeModel) else "assistant"
+        if isinstance(model, genai.GenerativeModel):
+            return {"role": role, "parts": [self.text]}
+        else:
+            return {"role": role, "content": self.text}
 
 
 class Conversation:
@@ -50,9 +57,9 @@ class Conversation:
         self.last_user = Role.AI
 
     @property
-    def history(self):
+    def history(self, model):  # TODO: typehint
         """Returns the formatted history of the conversation."""
-        return [message.json for message in self.messages]
+        return [message.json(model) for message in self.messages]
 
     def add(self, text: str) -> None:
         """
@@ -80,7 +87,7 @@ class Model:
     """A wrapper around the GenerativeModel from the gemini library."""
 
     def __init__(self) -> None:
-        self.model: genai.GenerativeModel | None = None
+        self.model: genai.GenerativeModel | Groq | None = None
 
     def choose_model_from(self, pic: Image.Image | None) -> None:
         """
@@ -102,9 +109,7 @@ class Model:
 
     def use_text(self):
         """Sets the model to use the text model."""
-        self.model = genai.GenerativeModel(
-            "gemini-pro", safety_settings=safety_settings
-        )
+        self.model = Groq(api_key=GROQ)
 
     @staticmethod
     def get_prompt(prompt_key: str, **kwargs: str) -> str:
@@ -133,7 +138,7 @@ class Model:
         pic: Image.Image = None,
         resolve: bool = True,
         **kwargs: str
-    ) -> genai.types.AsyncGenerateContentResponse:
+    ) -> str:
         """
         Asynchronously prompts the model.
 
@@ -143,19 +148,24 @@ class Model:
             resolve (bool, optional): Whether to response.resolve(). Defaults to True.
 
         Returns:
-            genai.types.AsyncGenerateContentResponse: The response from the model.
+            str: The response from the model.
         """
         prompt = self.get_prompt(prompt_key, **kwargs)
 
         if pic is not None:
             prompt = [prompt, pic]
+            response = await self.model.generate_content_async(prompt)
 
-        response = await self.model.generate_content_async(prompt)
+            if resolve:
+                await response.resolve()
 
-        if resolve:
-            await response.resolve()
-
-        return response
+            return response.text
+        else:
+            response = self.model.chat.completions.create(
+                messages=[Message(Role.USER, prompt).json(self.model)],
+                model="mixtral-8x7b-32768",
+            )
+            return response.choices[0].message.content
 
     def prompt_sync(
         self,
@@ -163,7 +173,7 @@ class Model:
         pic: Image.Image = None,
         resolve: bool = True,
         **kwargs: str
-    ) -> genai.types.AsyncGenerateContentResponse:
+    ) -> str:
         """
         Synchronously prompts the model.
 
@@ -173,19 +183,24 @@ class Model:
             resolve (bool, optional): Whether to response.resolve(). Defaults to True.
 
         Returns:
-            genai.types.AsyncGenerateContentResponse: The response from the model.
+            str: The response from the model.
         """
         prompt = self.get_prompt(prompt_key, **kwargs)
 
         if pic is not None:
             prompt = [prompt, pic]
+            response = self.model.generate_content(prompt)
 
-        response = self.model.generate_content(prompt)
+            if resolve:
+                response.resolve()
 
-        if resolve:
-            response.resolve()
-
-        return response
+            return response.text
+        else:
+            response = self.model.chat.completions.create(
+                messages=[Message(Role.USER, prompt).json(self.model)],
+                model="mixtral-8x7b-32768",
+            )
+            return response.choices[0].message.content
 
 
 model = Model()

@@ -6,7 +6,7 @@ import google.generativeai as genai
 from pprint import pprint
 from PIL import Image
 from prompts import prompts
-from gemini import Model
+from ai import Model
 
 from dotenv import load_dotenv
 from os import getenv
@@ -148,14 +148,15 @@ async def cleanup(question: str, text: str, model: Model, pic) -> str:
     print("Clean up", end=" - ")
     message = "[search][cleanup]"
 
-    response = await model.prompt(message, pic, question=question, text=text)
+    try:
+        response = await model.prompt(message, pic, question=question, text=text)
+    except Exception as e:
+        print("ERROR", e)
+        return
 
     print("Done cleaning up", end=" - ")
 
-    try:
-        return response.text
-    except ValueError:
-        return response.prompt_feedback
+    return response
 
 
 async def search(
@@ -178,7 +179,6 @@ async def search(
         prompt = "[search][search_query]"
 
     search_query = await model.prompt(prompt, pic, question=question)
-    search_query = search_query.text
     print("Search query:", search_query)
     print()
 
@@ -206,13 +206,13 @@ async def search(
         prompt, pic, question=question, formatted_results=formatted_results
     )
 
-    if "yes" in response.text.lower():
+    if "yes" in response.lower():
         print("Yes")
-    elif "more information" in response.text.lower():
+    elif "more information" in response.lower():
         print("More information")
-        web_num = [
-            num for num in range(1, 11) if str(num) in response.text.split()[-1]
-        ][0] - 1
+        web_num = [num for num in range(1, 11) if str(num) in response.split()[-1]][
+            0
+        ] - 1
         url = results[web_num]["url"]
         content = await get_main_content(url)
         cleaned_content = await cleanup(question, content, model, pic)

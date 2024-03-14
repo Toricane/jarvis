@@ -10,27 +10,9 @@ from tts import tts
 import azurespeech
 from prompts import prompts
 from button import wait_for_button, start_monitoring
-from gemini import model, conv
-
-from dotenv import load_dotenv
-from os import getenv
+from ai import model, conv
 
 from setup_logging import logger
-
-load_dotenv()
-
-GEMINI: str = getenv("GEMINI")
-genai.configure(api_key=GEMINI)
-
-# don't want error due to 'safety' from gemini
-safety_settings = [
-    {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_ONLY_HIGH"},
-    {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_ONLY_HIGH"},
-    {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_ONLY_HIGH"},
-    {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_ONLY_HIGH"},
-]
-
-# model = genai.GenerativeModel("gemini-pro", safety_settings=safety_settings)
 
 
 async def shutdown(loop: asyncio.AbstractEventLoop):
@@ -72,8 +54,6 @@ async def main(question: str, pic: Image.Image = None):
 
     logger.debug(f"Checking to search for '{question}'")
     to_search = await model.prompt("to_search", pic, question=question)
-
-    to_search = to_search.text
     final_message = ""
     params: dict[str, str] = {"question": question}
 
@@ -99,11 +79,9 @@ async def main(question: str, pic: Image.Image = None):
     #     print(chunk.text, end="")
 
     # queue.put(final_response.text)
-    print(final_response.parts)
-    print("-----")
-    print(final_response.text.replace("**", ""))
+    print(final_response.replace("**", ""))
 
-    azurespeech.text_to_speech(final_response.text.replace("**", ""))
+    azurespeech.text_to_speech(final_response.replace("**", ""))
 
     print()
     logger.debug("Main function finished")
