@@ -104,8 +104,10 @@ async def main(question: str, pic: Image.Image = None):
             c: str = chunk.choices[0].delta.content
             if c:
                 response += c
-                c = c.encode()
-                print(c, end="")
+                try:
+                    print(c, end="")
+                except UnicodeEncodeError:
+                    print("UnicodeEncodeError")
                 if thread is None:
                     if any(c == x or x in c for x in (".", "?!", "!?", "!", "?")):
                         full_response = response
@@ -164,8 +166,10 @@ async def main(question: str, pic: Image.Image = None):
             c: str = chunk.text
             if c:
                 response += c
-                c = c.encode()
-                print(c, end="")
+                try:
+                    print(c, end="")
+                except UnicodeEncodeError:
+                    print("UnicodeEncodeError")
                 if thread is None:
                     if any(c == x or x in c for x in (".", "?!", "!?", "!", "?")):
                         full_response = response
