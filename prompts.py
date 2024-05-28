@@ -5,8 +5,8 @@ I have a question: {question}
 You are seeing what I'm looking at as a picture. Is the picture relevant to my question?
 
 Task:
-Respond with "yes" if the picture is relevant to my question.
-Respond with "no" otherwise.
+Respond with "Yes." if the picture is relevant to my question.
+Respond with "No." otherwise.
 """,
     to_search="""
 I have a question: {question}

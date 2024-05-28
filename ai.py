@@ -164,7 +164,7 @@ class Model:
             generation_config = None
             if prompt_key == "pic_relevance":
                 generation_config = genai.types.GenerationConfig(
-                    candidate_count=1, stop_sequences=["yes", "no"], max_output_tokens=1
+                    candidate_count=1, stop_sequences=["."], max_output_tokens=3
                 )
 
             response = await self.model.generate_content_async(
