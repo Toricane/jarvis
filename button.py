@@ -46,8 +46,8 @@ def monitor_button():
         if running:
             azurespeech.speech_synthesizer.stop_speaking()
             azurespeech.speech_synthesizer.stop_speaking()
-            button_pressed = False
-            sleep(0.1)
+        else:
+            button_pressed = True
 
     # TODO: shutdown
     ...
