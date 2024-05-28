@@ -41,8 +41,6 @@ def monitor_button():
             pic.save(f"photos/{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.jpg")
             continue
 
-        button_pressed = True
-
         if running:
             azurespeech.speech_synthesizer.stop_speaking()
             azurespeech.speech_synthesizer.stop_speaking()
