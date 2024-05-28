@@ -17,6 +17,11 @@ import threading
 
 from setup_logging import logger
 
+import sys
+import io
+
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
+
 
 async def shutdown(loop: asyncio.AbstractEventLoop):
     """
