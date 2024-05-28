@@ -1,5 +1,5 @@
 from gpiozero import Button
-from time import time
+from time import time, sleep
 import threading
 from datetime import datetime
 
@@ -47,6 +47,7 @@ def monitor_button():
             azurespeech.speech_synthesizer.stop_speaking()
             azurespeech.speech_synthesizer.stop_speaking()
             button_pressed = False
+            sleep(0.1)
 
     # TODO: shutdown
     ...
