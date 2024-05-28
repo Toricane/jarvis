@@ -17,11 +17,6 @@ import threading
 
 from setup_logging import logger
 
-import sys
-import io
-
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
-
 
 async def shutdown(loop: asyncio.AbstractEventLoop):
     """
@@ -109,6 +104,7 @@ async def main(question: str, pic: Image.Image = None):
             c: str = chunk.choices[0].delta.content
             if c:
                 response += c
+                c = c.encode()
                 print(c, end="")
                 if thread is None:
                     if any(c == x or x in c for x in (".", "?!", "!?", "!", "?")):
@@ -168,6 +164,7 @@ async def main(question: str, pic: Image.Image = None):
             c: str = chunk.text
             if c:
                 response += c
+                c = c.encode()
                 print(c, end="")
                 if thread is None:
                     if any(c == x or x in c for x in (".", "?!", "!?", "!", "?")):
