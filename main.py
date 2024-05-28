@@ -138,18 +138,13 @@ async def main(question: str, pic: Image.Image = None):
 
         azurespeech.ds = 0
         text_to_speech(response)
+        counter = 0
 
-        while True:
+        while counter < 10:
             if azurespeech.ds == 0:
-                sleep(0.2)
-                if azurespeech.ds == 0:
-                    sleep(0.2)
-                    if azurespeech.ds == 0:
-                        sleep(0.2)
-                        if azurespeech.ds == 0:
-                            sleep(0.2)
-                            if azurespeech.ds == 0:
-                                break
+                counter += 1
+            else:
+                counter = 0
             sleep(0.1)
 
         azurespeech.ds = 0
@@ -209,18 +204,13 @@ async def main(question: str, pic: Image.Image = None):
 
         azurespeech.ds = 0
         text_to_speech(response)
+        counter = 0
 
-        while True:
+        while counter < 10:
             if azurespeech.ds == 0:
-                sleep(0.2)
-                if azurespeech.ds == 0:
-                    sleep(0.2)
-                    if azurespeech.ds == 0:
-                        sleep(0.2)
-                        if azurespeech.ds == 0:
-                            sleep(0.2)
-                            if azurespeech.ds == 0:
-                                break
+                counter += 1
+            else:
+                counter = 0
             sleep(0.1)
 
         azurespeech.ds = 0

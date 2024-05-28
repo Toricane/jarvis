@@ -25,7 +25,7 @@ def start_speaking(*args, **kwargs) -> None:
 
 def done_speaking(*args, **kwargs):
     global ds
-    ds -= 1
+    ds = 0
 
 
 # speech_synthesizer.synthesizing.connect(lambda _: print(f"Synthesizing {_}"))
