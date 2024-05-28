@@ -160,8 +160,16 @@ class Model:
         prompt = self.get_prompt(prompt_key, **kwargs)
 
         if pic is not None:
-            prompt = [prompt, pic]
-            response = await self.model.generate_content_async(prompt)
+            prompt = [pic, prompt]
+            generation_config = None
+            if prompt_key == "pic_relevance":
+                generation_config = genai.types.GenerationConfig(
+                    candidate_count=1, stop_sequences=["yes", "no"], max_output_tokens=1
+                )
+
+            response = await self.model.generate_content_async(
+                prompt, generation_config=generation_config
+            )
 
             if resolve:
                 await response.resolve()
@@ -194,8 +202,16 @@ class Model:
         prompt = self.get_prompt(prompt_key, **kwargs)
 
         if pic is not None:
-            prompt = [prompt, pic]
-            response = self.model.generate_content(prompt)
+            prompt = [pic, prompt]
+            generation_config = None
+            if prompt_key == "pic_relevance":
+                generation_config = genai.types.GenerationConfig(
+                    candidate_count=1, stop_sequences=["yes", "no"], max_output_tokens=1
+                )
+
+            response = self.model.generate_content(
+                prompt, generation_config=generation_config
+            )
 
             if resolve:
                 response.resolve()
