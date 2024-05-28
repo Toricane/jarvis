@@ -212,12 +212,8 @@ async def search(
         print("More information")
         print(response)
         response = response.lower().split("\n")[0]
-        web_num = [
-            num
-            for num in range(1, 11)
-            if str(num) in response[-5:]
-        ][0] - 1
-        print("RESULTS:", results)
+        web_num = int(response.split(":")[0]) - 1
+
         url = results[web_num]["url"]
         content = await get_main_content(url)
         cleaned_content = await cleanup(question, content, model, pic)

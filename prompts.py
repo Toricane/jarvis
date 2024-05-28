@@ -78,7 +78,7 @@ I searched Google for the question and found the following search results:
 '''
 
 If you can answer my question with accuracy and precision, respond with "Yes."
-If you cannot answer my question, but you want more information from a good search result, respond with "More information from website <number of the website>." For example, "More information from website 1." Replace the number accordingly. No additional output is needed. I want only this 1 line of output.
+If you cannot answer my question, but you want more information from a good search result, respond with "<number of the website>: more information." For example, for website 1, "1: more information." Replace the number accordingly. No additional output is needed. I want only this 1 line of output.
 If you think the search results are not helpful, respond with "No."
 """,
     ),

@@ -166,6 +166,10 @@ class Model:
                 generation_config = genai.types.GenerationConfig(
                     candidate_count=1, stop_sequences=["."], max_output_tokens=3
                 )
+            elif prompt_key == "[search][followup]":
+                generation_config = genai.types.GenerationConfig(
+                    candidate_count=1, stop_sequences=["."], max_output_tokens=10
+                )
 
             response = await self.model.generate_content_async(
                 prompt, generation_config=generation_config
@@ -206,7 +210,11 @@ class Model:
             generation_config = None
             if prompt_key == "pic_relevance":
                 generation_config = genai.types.GenerationConfig(
-                    candidate_count=1, stop_sequences=["yes", "no"], max_output_tokens=1
+                    candidate_count=1, stop_sequences=["."], max_output_tokens=3
+                )
+            elif prompt_key == "[search][followup]":
+                generation_config = genai.types.GenerationConfig(
+                    candidate_count=1, stop_sequences=["."], max_output_tokens=10
                 )
 
             response = self.model.generate_content(
