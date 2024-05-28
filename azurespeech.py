@@ -15,15 +15,22 @@ speech_recognizer = speechsdk.SpeechRecognizer(speech_config=speech_config)
 speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config)
 
 # print("Say something...")
-ds = False
+ds = 0
+
+
+def start_speaking(*args, **kwargs) -> None:
+    global ds
+    ds += 1
 
 
 def done_speaking(*args, **kwargs):
     global ds
-    ds = True
+    ds -= 1
 
 
 # speech_synthesizer.synthesizing.connect(lambda _: print(f"Synthesizing {_}"))
+
+speech_synthesizer.synthesis_started.connect(start_speaking)
 speech_synthesizer.synthesis_completed.connect(done_speaking)
 
 

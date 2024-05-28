@@ -135,15 +135,18 @@ async def main(question: str, pic: Image.Image = None):
 
         full_response += response
         response = response.strip()
-        azurespeech.ds = False
+
+        azurespeech.ds = 0
         text_to_speech(response)
-        # thread = threading.Thread(target=text_to_speech, args=(response,))
-        # thread.start()
-        # thread.join()
-        while azurespeech.ds is False:
+
+        while True:
+            if azurespeech.ds == 0:
+                sleep(0.5)
+                if azurespeech.ds == 0:
+                    break
             sleep(0.1)
 
-        azurespeech.ds = False
+        azurespeech.ds = 0
 
         # azurespeech.done_speaking = False
 
@@ -197,15 +200,18 @@ async def main(question: str, pic: Image.Image = None):
 
         full_response += response
         response = response.strip()
-        azurespeech.ds = False
+
+        azurespeech.ds = 0
         text_to_speech(response)
-        # thread = threading.Thread(target=text_to_speech, args=(response,))
-        # thread.start()
-        # thread.join()
-        while azurespeech.ds is False:
+
+        while True:
+            if azurespeech.ds == 0:
+                sleep(0.5)
+                if azurespeech.ds == 0:
+                    break
             sleep(0.1)
 
-        azurespeech.ds = False
+        azurespeech.ds = 0
 
         # azurespeech.done_speaking = False
 
