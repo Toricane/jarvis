@@ -16,6 +16,9 @@ GEMINI: str = getenv("GEMINI")
 GROQ: str = getenv("GROQ")
 genai.configure(api_key=GEMINI)
 
+gemini_model = "gemini-1.5-flash"
+groq_model = "llama3-70b-8192"
+
 # don't want error due to 'safety' from gemini
 safety_settings = [
     {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_ONLY_HIGH"},
@@ -105,7 +108,7 @@ class Model:
     def use_vision(self):
         """Sets the model to use the vision model."""
         self.model = genai.GenerativeModel(
-            "gemini-pro-vision", safety_settings=safety_settings
+            gemini_model, safety_settings=safety_settings
         )
 
     def use_text(self):
@@ -166,8 +169,7 @@ class Model:
             return response.text
         else:
             response = self.model.chat.completions.create(
-                messages=[Message(Role.USER, prompt).json(self.model)],
-                model="mixtral-8x7b-32768",
+                messages=[Message(Role.USER, prompt).json(self.model)], model=groq_model
             )
             return response.choices[0].message.content
 
@@ -201,8 +203,7 @@ class Model:
             return response.text
         else:
             response = self.model.chat.completions.create(
-                messages=[Message(Role.USER, prompt).json(self.model)],
-                model="mixtral-8x7b-32768",
+                messages=[Message(Role.USER, prompt).json(self.model)], model=groq_model
             )
             return response.choices[0].message.content
 
