@@ -141,9 +141,15 @@ async def main(question: str, pic: Image.Image = None):
 
         while True:
             if azurespeech.ds == 0:
-                sleep(0.5)
+                sleep(0.2)
                 if azurespeech.ds == 0:
-                    break
+                    sleep(0.2)
+                    if azurespeech.ds == 0:
+                        sleep(0.2)
+                        if azurespeech.ds == 0:
+                            sleep(0.2)
+                            if azurespeech.ds == 0:
+                                break
             sleep(0.1)
 
         azurespeech.ds = 0
@@ -206,9 +212,15 @@ async def main(question: str, pic: Image.Image = None):
 
         while True:
             if azurespeech.ds == 0:
-                sleep(0.5)
+                sleep(0.2)
                 if azurespeech.ds == 0:
-                    break
+                    sleep(0.2)
+                    if azurespeech.ds == 0:
+                        sleep(0.2)
+                        if azurespeech.ds == 0:
+                            sleep(0.2)
+                            if azurespeech.ds == 0:
+                                break
             sleep(0.1)
 
         azurespeech.ds = 0
