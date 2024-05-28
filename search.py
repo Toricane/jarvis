@@ -226,7 +226,7 @@ async def search(
             ]
         )
     else:
-        print(f"No, {response=}")
+        print(f"No, {response=} {formatted_results=}")
         return None, None
     print("\n\nSearch results:")
     print("--------------------------------------------------")
