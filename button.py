@@ -5,10 +5,13 @@ from datetime import datetime
 
 from webcam import take_pic
 from sounds import play_sound
+import azurespeech
 
 button = Button(2)
 button_pressed = False
 button_thread: threading.Thread | None = None
+
+running: bool = False
 
 
 def wait_for_button():
@@ -39,6 +42,10 @@ def monitor_button():
             continue
 
         button_pressed = True
+
+        if running:
+            azurespeech.speech_synthesizer.stop_speaking()
+            button_pressed = False
 
     # TODO: shutdown
     ...

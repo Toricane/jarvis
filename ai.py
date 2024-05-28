@@ -92,6 +92,8 @@ class Model:
 
     def __init__(self) -> None:
         self.model: genai.GenerativeModel | Groq | None = None
+        self.gemini_model: str = "gemini-1.5-flash"
+        self.groq_model: str = "llama3-70b-8192"
 
     def choose_model_from(self, pic: Image.Image | None) -> None:
         """
