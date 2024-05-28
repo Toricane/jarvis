@@ -2,10 +2,10 @@ prompts = dict(
     pic_relevance="""
 I have a question: {question}
 
-You are seeing what I'm looking at as a picture. Is the picture relevant to my question?
+You are seeing what I'm looking at. Is what I'm seeing relevant to my question?
 
 Task:
-Respond with "Yes." if the picture is relevant to my question.
+Respond with "Yes." if what I'm looking at is relevant to my question.
 Respond with "No." otherwise.
 """,
     to_search="""
