@@ -22,6 +22,21 @@ import threading
 
 from setup_logging import logger
 
+import threading
+import signal
+
+
+# Custom exception to indicate interruption from a thread
+class ThreadKeyboardInterrupt(Exception):
+    pass
+
+
+def signal_handler(signum, frame):
+    raise ThreadKeyboardInterrupt
+
+
+signal.signal(signal.SIGINT, signal_handler)
+
 
 async def shutdown(loop: asyncio.AbstractEventLoop):
     """

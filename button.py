@@ -7,6 +7,11 @@ from webcam import take_pic
 from sounds import play_sound, stt, camera_shutter, wake_word_detected
 import azurespeech
 
+import threading
+import signal
+import time
+import os
+
 button = Button(2)
 button_pressed = False
 button_thread: threading.Thread | None = None
@@ -50,7 +55,7 @@ def monitor_button():
         else:
             button_pressed = True
 
-    raise KeyboardInterrupt
+    os.kill(os.getpid(), signal.SIGINT)
 
 
 def start_monitoring():
