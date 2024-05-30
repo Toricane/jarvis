@@ -10,7 +10,7 @@ import threading
 from azurespeech import text_to_speech
 
 load_dotenv()
-client = Groq(api_key=getenv("GROQ_API_KEY"))
+# client = Groq(api_key=getenv("GROQ"))
 
 USER_AGE = 16
 USER_NAME = "Prajwal"
@@ -28,7 +28,7 @@ USER_INFO = USER_INFO.strip() + " "
 
 class AI:
     def __init__(self) -> None:
-        self.client: Groq = Groq(api_key=getenv("GROQ_API_KEY"))
+        self.client: Groq = Groq(api_key=getenv("GROQ"))
         self.model = "llama3-70b-8192"
         self.talking: bool = False
         self.history: list[dict[str, str]] = [
