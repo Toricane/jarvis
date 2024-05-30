@@ -20,6 +20,7 @@ from ai import model, conv, Message, Role
 import button
 import threading
 from google.api_core.exceptions import InternalServerError
+from superfastconvo import superfastconvo_record_and_transcribe
 
 from setup_logging import logger
 
@@ -269,7 +270,9 @@ loop = asyncio.new_event_loop()
 start_monitoring()
 
 try:
-    record_and_transcribe(main, loop=loop)
+    record_and_transcribe(
+        main, loop=loop, superfastconvojarvis=superfastconvo_record_and_transcribe
+    )
 except (KeyboardInterrupt, ThreadKeyboardInterrupt):
     logger.debug("Ctrl+C detected, exiting...")
     print("Exiting...")
