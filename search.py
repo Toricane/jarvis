@@ -7,6 +7,7 @@ from pprint import pprint
 from PIL import Image
 from prompts import prompts
 from ai import Model
+from urllib.parse import urlparse, ParseResult
 
 from dotenv import load_dotenv
 from os import getenv
@@ -14,6 +15,17 @@ from os import getenv
 load_dotenv()
 
 GOOGLE_SEARCH: str = getenv("GOOGLE_SEARCH")
+
+
+def get_domain_name(url: str) -> str:
+    parsed_url: ParseResult = urlparse(url)
+    domain: str = parsed_url.netloc
+
+    # Remove 'www.' if present
+    if domain.startswith("www."):
+        domain = domain[4:]
+
+    return domain
 
 
 async def fetch(session: aiohttp.ClientSession, url: str) -> str:
@@ -195,7 +207,7 @@ async def search(
     """
     formatted_results = "\n".join(
         [
-            f"{i}: {r['name']}\n{r['url']}\n{r['snippet']}\n"
+            f"{i}: {r['name']}\n{get_domain_name(r['url'])}\n{r['snippet']}\n"
             for i, r in enumerate(results, 1)
         ]
     )
@@ -207,9 +219,9 @@ async def search(
     )
 
     if "yes" in response.lower():
-        print("Yes")
+        print("Yes, the search results are informative enough")
     elif "more information" in response.lower():
-        print("More information")
+        print("More information required from the search results")
         print(response)
         response = response.lower().split("\n")[0]
         web_num = int(response.split(":")[0]) - 1
@@ -226,7 +238,9 @@ async def search(
             ]
         )
     else:
-        print(f"No, {response=} {formatted_results=} {results=}")
+        print(
+            f"No, the search results are not informative enough:\n{response=} {formatted_results=} {results=}"
+        )
         return None, None
     print("\n\nSearch results:")
     print("--------------------------------------------------")
