@@ -26,14 +26,14 @@ Respond with "no" if you need my internet search results to answer my question w
         no_search="""
 I have a question: {question}
 
-I want you to answer the question to the best of your abilities.
-Keep your answer to the question concise. The plan is that it will be converted from text to speech and spoken to the user. Keep it under 200 words.
+I want you to answer my question to the best of your abilities.
+Keep your answer to my question concise. The plan is that it will be converted from text to speech and spoken to the user. Keep it under 200 words.
 """,
         yes_search="""
 I have a question: {question}
 
-I want you to answer the question using the following search results.
-Keep your answer to the question concise. The plan is that it will be converted from text to speech and spoken to the user. Keep it under 200 words.
+I want you to answer my question using the following search results.
+Keep your answer to my question concise. The plan is that it will be converted from text to speech and spoken to the user. Keep it under 200 words.
 If the search results have multiple dates/times, try to answer with the most recent and accurate data.
 If you find that the search results are not helpful, you can answer it to the best of your ability.
 
