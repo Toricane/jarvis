@@ -6,6 +6,7 @@ from os import getenv
 from dotenv import load_dotenv
 from groq import Groq
 import threading
+import button
 
 from azurespeech import text_to_speech
 from sounds import wake_word_detected, play_sound
@@ -57,6 +58,7 @@ class AI:
         thread = None
 
         print("AI: ", end="")
+        button.running = True
         for chunk in stream:
             c: str = chunk.choices[0].delta.content
             if c:
@@ -102,6 +104,7 @@ class AI:
             sleep(0.1)
 
         azurespeech.ds = 0
+        button.running = False
 
         # azurespeech.done_speaking = False
 
@@ -123,7 +126,7 @@ def superfastconvo_record_and_transcribe():
             text = azurespeech.speech_to_text()
             if text is None:
                 print("    No speech detected within timeout period.")
-                sleep(5)
+                sleep(1)
                 continue
             print("You: " + text)
             response = ai.chat(text)
