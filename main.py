@@ -281,6 +281,7 @@ except (KeyboardInterrupt, ThreadKeyboardInterrupt):
 cam.close()
 loop.run_until_complete(shutdown(loop))
 play_sound("low_sound")
-sleep(2)
+sleep(1)
 play_sound("low_sound")
+sleep(1)
 logger.info("Exited")
