@@ -135,6 +135,7 @@ def superfastconvo_record_and_transcribe():
                     "it was nice chatting with you",
                     "catch you later",
                     "have a great day",
+                    "later, ",
                 )
             ):
                 print("\n    Exiting...")
