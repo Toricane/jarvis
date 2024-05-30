@@ -1,4 +1,5 @@
 import google.generativeai as genai
+from google.api_core.exceptions import InternalServerError
 from groq import Groq
 from enum import Enum
 from PIL import Image
@@ -173,9 +174,16 @@ class Model:
                     candidate_count=1, stop_sequences=["."], max_output_tokens=10
                 )
 
-            response = await self.model.generate_content_async(
-                prompt, generation_config=generation_config
-            )
+            try:
+                response = await self.model.generate_content_async(
+                    prompt, generation_config=generation_config
+                )
+            except InternalServerError as e:
+                print("ERROR", e)
+                print("Trying again...")
+                response = await self.model.generate_content_async(
+                    prompt, generation_config=generation_config
+                )
 
             if resolve:
                 await response.resolve()
