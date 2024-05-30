@@ -227,9 +227,16 @@ class Model:
                     candidate_count=1, stop_sequences=["."], max_output_tokens=10
                 )
 
-            response = self.model.generate_content(
-                prompt, generation_config=generation_config
-            )
+            try:
+                response = self.model.generate_content(
+                    prompt, generation_config=generation_config
+                )
+            except InternalServerError as e:
+                print("ERROR", e)
+                print("Trying again...")
+                response = self.model.generate_content(
+                    prompt, generation_config=generation_config
+                )
 
             if resolve:
                 response.resolve()
