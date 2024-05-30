@@ -54,7 +54,7 @@ def speech_to_text() -> str | None:
 
 
 def text_to_speech(text: str) -> None:
-    speed = 10
+    speed = 0
     ssml = f"""<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="en-CA"><voice name="{speech_config.speech_synthesis_voice_name}"><prosody rate="+{speed}%">{text}</prosody></voice></speak>"""
 
     try:
