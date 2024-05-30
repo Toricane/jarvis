@@ -65,7 +65,7 @@ class AI:
                 response += c
                 print(c, end="")
                 if thread is None:
-                    if any(c == x for x in (".", "?!", "!?", "!", "?")):
+                    if any(c == x for x in (".", "?!", "!?", "!", "?", ":")):
                         full_response = response
                         response = response.strip()
                         thread = threading.Thread(
@@ -75,7 +75,7 @@ class AI:
                         response = ""
                 else:
                     if (
-                        any(c == x for x in (".", "?!", "!?", "!", "?"))
+                        any(c == x for x in (".", "?!", "!?", "!", "?", ":"))
                         and not thread.is_alive()
                     ):
                         full_response += response

@@ -130,7 +130,7 @@ async def main(question: str, pic: Image.Image = None):
                 except UnicodeEncodeError:
                     print("UnicodeEncodeError")
                 if thread is None:
-                    if any(c == x or x in c for x in (".", "?!", "!?", "!", "?")):
+                    if any(c == x or x in c for x in (".", "?!", "!?", "!", "?", ":")):
                         full_response = response
                         response = response.strip()
                         thread = threading.Thread(
@@ -140,7 +140,7 @@ async def main(question: str, pic: Image.Image = None):
                         response = ""
                 else:
                     if (
-                        any(c == x or x in c for x in (".", "?!", "!?", "!", "?"))
+                        any(c == x or x in c for x in (".", "?!", "!?", "!", "?", ":"))
                         and not thread.is_alive()
                     ):
                         full_response += response
@@ -201,7 +201,7 @@ async def main(question: str, pic: Image.Image = None):
                 except UnicodeEncodeError:
                     print("UnicodeEncodeError")
                 if thread is None:
-                    if any(c == x or x in c for x in (".", "?!", "!?", "!", "?")):
+                    if any(c == x or x in c for x in (".", "?!", "!?", "!", "?", ":")):
                         full_response = response
                         response = response.strip()
                         thread = threading.Thread(
@@ -211,7 +211,7 @@ async def main(question: str, pic: Image.Image = None):
                         response = ""
                 else:
                     if (
-                        any(c == x or x in c for x in (".", "?!", "!?", "!", "?"))
+                        any(c == x or x in c for x in (".", "?!", "!?", "!", "?", ":"))
                         and not thread.is_alive()
                     ):
                         full_response += response
