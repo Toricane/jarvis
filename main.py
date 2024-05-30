@@ -1,3 +1,7 @@
+from button import wait_for_button, start_monitoring
+
+wait_for_button()
+
 import asyncio
 import google.generativeai as genai
 from time import sleep
@@ -10,7 +14,6 @@ from tts import tts
 import azurespeech
 from azurespeech import text_to_speech
 from prompts import prompts
-from button import wait_for_button, start_monitoring
 from ai import model, conv, Message, Role
 import button
 import threading
@@ -238,7 +241,7 @@ async def test(question: str, pic: Image.Image = None) -> None:
     ...
 
 
-wait_for_button()
+# wait_for_button()
 
 loop = asyncio.new_event_loop()
 start_monitoring()
