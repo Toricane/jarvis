@@ -34,6 +34,7 @@ def monitor_button():
         if difference > 3:
             print("shutting down")
             play_sound("low_sound")
+            sleep(1)
             break
 
         if difference > 0.6:
@@ -49,8 +50,7 @@ def monitor_button():
         else:
             button_pressed = True
 
-    # TODO: shutdown
-    ...
+    raise KeyboardInterrupt
 
 
 def start_monitoring():

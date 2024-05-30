@@ -257,4 +257,5 @@ except KeyboardInterrupt:
 # closing the program
 cam.close()
 loop.run_until_complete(shutdown(loop))
+play_sound("low_sound")
 logger.info("Exited")
