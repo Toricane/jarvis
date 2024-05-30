@@ -33,7 +33,7 @@ def monitor_button():
 
         if difference > 3:
             print("shutting down")
-            play_sound("stt")
+            play_sound("low_sound")
             break
 
         if difference > 0.6:
