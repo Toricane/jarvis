@@ -8,6 +8,7 @@ from groq import Groq
 import threading
 
 from azurespeech import text_to_speech
+from sounds import wake_word_detected
 
 load_dotenv()
 
@@ -114,7 +115,7 @@ class AI:
 def superfastconvo_record_and_transcribe():
     """Main function to listen and transcribe the speech."""
     ai = AI()
-
+    wake_word_detected()
     try:
         while True:
             print("\n    Listening for speech...")
