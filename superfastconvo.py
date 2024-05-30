@@ -10,7 +10,6 @@ import threading
 from azurespeech import text_to_speech
 
 load_dotenv()
-# client = Groq(api_key=getenv("GROQ"))
 
 USER_AGE = 16
 USER_NAME = "Prajwal"
