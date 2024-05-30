@@ -4,7 +4,7 @@ import threading
 from datetime import datetime
 
 from webcam import take_pic
-from sounds import play_sound
+from sounds import play_sound, stt, camera_shutter, wake_word_detected
 import azurespeech
 
 button = Button(2)
@@ -18,6 +18,7 @@ def wait_for_button():
     button.wait_for_press()
     button.wait_for_release()
     print("Starting program...")
+    wake_word_detected()
 
 
 def monitor_button():
@@ -32,6 +33,7 @@ def monitor_button():
 
         if difference > 3:
             print("shutting down")
+            play_sound("stt")
             break
 
         if difference > 0.6:
