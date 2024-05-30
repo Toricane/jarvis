@@ -19,10 +19,10 @@ from prompts import prompts
 from ai import model, conv, Message, Role
 import button
 import threading
+from google.api_core.exceptions import InternalServerError
 
 from setup_logging import logger
 
-import threading
 import signal
 
 
@@ -179,7 +179,12 @@ async def main(question: str, pic: Image.Image = None):
         prompt = model.get_prompt(final_message, **params)
         prompt = [pic, prompt]
 
-        stream = model.model.generate_content(prompt, stream=True)
+        try:
+            stream = model.model.generate_content(prompt, stream=True)
+        except InternalServerError as e:
+            print("ERROR", e)
+            print("Trying again...")
+            stream = model.model.generate_content(prompt, stream=True)
 
         response: str = ""
         full_response: str = ""
