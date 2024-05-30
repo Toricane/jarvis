@@ -9,7 +9,6 @@ import azurespeech
 
 import threading
 import signal
-import time
 import os
 
 button = Button(2)
