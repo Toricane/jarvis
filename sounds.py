@@ -2,7 +2,11 @@ from os import getcwd
 from pathlib import Path
 import pygame
 
-pygame.mixer.init()
+try:
+    pygame.mixer.init()
+except pygame.error as e:
+    print("Error initializing pygame mixer:", e)
+    pygame.mixer.init()
 current_dir = Path(getcwd())
 
 
