@@ -265,7 +265,7 @@ start_monitoring()
 
 try:
     record_and_transcribe(main, loop=loop)
-except KeyboardInterrupt:
+except (KeyboardInterrupt, ThreadKeyboardInterrupt):
     logger.debug("Ctrl+C detected, exiting...")
     print("Exiting...")
 
