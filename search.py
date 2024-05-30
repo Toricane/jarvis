@@ -238,9 +238,7 @@ async def search(
             ]
         )
     else:
-        print(
-            f"No, the search results are not informative enough:\n{response=} {formatted_results=} {results=}"
-        )
+        print(f"No, the search results are not informative enough.")
         return None, None
     print("\n\nSearch results:")
     print("--------------------------------------------------")
