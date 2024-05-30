@@ -1,3 +1,18 @@
+import os
+import time
+
+
+def wait_for_pulseaudio():
+    while True:
+        try:
+            os.system("pactl info")
+            break
+        except:
+            time.sleep(1)
+
+
+wait_for_pulseaudio()
+
 from sounds import play_sound
 from button import wait_for_button, start_monitoring
 
