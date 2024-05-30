@@ -1,5 +1,7 @@
+from sounds import play_sound
 from button import wait_for_button, start_monitoring
 
+play_sound("low_sound")
 wait_for_button()
 
 import asyncio
