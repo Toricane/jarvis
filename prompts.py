@@ -3,6 +3,7 @@ prompts = dict(
 I have a question: {question}
 
 You are seeing what I'm looking at. Is what I'm seeing relevant to my question?
+If I am asking along the lines of "What is this?" or "What is in front of me?" or "Describe what you see," then you should respond with "Yes."
 
 Task:
 Respond with "Yes." if what I'm looking at is relevant to my question.
