@@ -52,7 +52,7 @@ def record_and_transcribe(
     # Adjust for ambient noise and record audio
     print("Adjusting for ambient noise...")
     with sr.Microphone() as source:
-        recognizer.adjust_for_ambient_noise(source, 3)
+        recognizer.adjust_for_ambient_noise(source, 1)
 
     print("I am ready to record after you say 'Jarvis'. Say 'Jarvis' to activate.")
     sounds.stt()
