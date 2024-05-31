@@ -63,7 +63,7 @@ async def main(question: str, pic: Image.Image = None):
         pic (Image.Image, optional): The photo from the camera. Defaults to None.
     """
     logger.info("Main function running")
-    button.running = True
+    # button.running = True
     global model
 
     model.use_vision()
@@ -158,6 +158,7 @@ async def main(question: str, pic: Image.Image = None):
         response = response.strip()
 
         azurespeech.ds = 0
+        button.running = True
         text_to_speech(response)
         counter = 0
 
@@ -229,6 +230,7 @@ async def main(question: str, pic: Image.Image = None):
         response = response.strip()
 
         azurespeech.ds = 0
+        button.running = True
         text_to_speech(response)
         counter = 0
 

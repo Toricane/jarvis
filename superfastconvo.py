@@ -58,7 +58,6 @@ class AI:
         thread = None
 
         print("AI: ", end="")
-        button.running = True
         for chunk in stream:
             c: str = chunk.choices[0].delta.content
             if c:
@@ -93,6 +92,7 @@ class AI:
         response = response.strip()
 
         azurespeech.ds = 0
+        button.running = True
         text_to_speech(response)
         counter = 0
 
