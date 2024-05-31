@@ -226,7 +226,11 @@ async def search(
         response = response.lower().split("\n")[0]
         web_num = int(response.split(":")[0]) - 1
 
-        url = results[web_num]["url"]
+        try:
+            url = results[web_num]["url"]
+        except IndexError:
+            print("Invalid web number")
+            return None, None
         content = await get_main_content(url)
         cleaned_content = await cleanup(question, content, model, pic)
         results[web_num]["content"] = cleaned_content
