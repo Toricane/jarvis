@@ -86,7 +86,10 @@ def record_and_transcribe(
 
             sounds.stt()
 
-            if superfastconvojarvis is not None and "conversation mode" in text.lower():
+            if superfastconvojarvis is not None and any(
+                s in text.lower()
+                for s in ("talk with you", "talk to you", "conversation mode")
+            ):
                 superfastconvojarvis()
             elif coro is not None:
                 if loop is None:
