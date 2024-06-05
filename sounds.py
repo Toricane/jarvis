@@ -2,7 +2,10 @@ from os import getcwd
 from pathlib import Path
 import pygame
 
-pygame.mixer.init()
+try:
+    pygame.mixer.init()
+except pygame.error as e:
+    print("Error initializing pygame mixer:", e)
 current_dir = Path(getcwd())
 
 
@@ -19,18 +22,22 @@ def play_sound(file: str) -> None:
 
 
 def wake_word_detected():
-    play_sound("wake_word_detected")
+    play_sound("start_listening")
 
 
 def stt():
-    play_sound("stt")
+    play_sound("finish_listening")
+
+
+def camera_shutter():
+    play_sound("camera_shutter")
 
 
 if __name__ == "__main__":
     from time import sleep
 
-    play_sound("wake_word_detected")
+    play_sound("start_listening")
     sleep(2)
-    play_sound("stt")
+    play_sound("finish_listening")
     sleep(2)
     print("Done playing sounds")

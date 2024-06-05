@@ -1,9 +1,12 @@
 import google.generativeai as genai
+from google.api_core.exceptions import InternalServerError
+from groq import Groq
 from enum import Enum
 from PIL import Image
 from time import time
 
 from prompts import prompts
+from context import get_context
 
 from dotenv import load_dotenv
 from os import getenv
@@ -11,7 +14,11 @@ from os import getenv
 load_dotenv()
 
 GEMINI: str = getenv("GEMINI")
+GROQ: str = getenv("GROQ")
 genai.configure(api_key=GEMINI)
+
+gemini_model = "gemini-1.5-flash"
+groq_model = "llama3-70b-8192"
 
 # don't want error due to 'safety' from gemini
 safety_settings = [
@@ -26,7 +33,7 @@ class Role(Enum):
     """The role of the author of the message."""
 
     USER = "user"
-    AI = "model"
+    AI = "ai"
 
 
 class Message:
@@ -37,9 +44,14 @@ class Message:
         self.text = text
         self.created_at: float = time()
 
-    @property
-    def json(self):
-        return {"role": self.type.value, "parts": [self.text]}
+    def json(self, model):  # TODO: typehint
+        role = self.type.value
+        if role != "user":
+            role = "model" if isinstance(model, genai.GenerativeModel) else "assistant"
+        if isinstance(model, genai.GenerativeModel):
+            return {"role": role, "parts": [self.text]}
+        else:
+            return {"role": role, "content": self.text}
 
 
 class Conversation:
@@ -50,9 +62,9 @@ class Conversation:
         self.last_user = Role.AI
 
     @property
-    def history(self):
+    def history(self, model):  # TODO: typehint
         """Returns the formatted history of the conversation."""
-        return [message.json for message in self.messages]
+        return [message.json(model) for message in self.messages]
 
     def add(self, text: str) -> None:
         """
@@ -80,7 +92,9 @@ class Model:
     """A wrapper around the GenerativeModel from the gemini library."""
 
     def __init__(self) -> None:
-        self.model: genai.GenerativeModel | None = None
+        self.model: genai.GenerativeModel | Groq | None = None
+        self.gemini_model: str = "gemini-1.5-flash"
+        self.groq_model: str = "llama3-70b-8192"
 
     def choose_model_from(self, pic: Image.Image | None) -> None:
         """
@@ -97,14 +111,12 @@ class Model:
     def use_vision(self):
         """Sets the model to use the vision model."""
         self.model = genai.GenerativeModel(
-            "gemini-pro-vision", safety_settings=safety_settings
+            gemini_model, safety_settings=safety_settings
         )
 
     def use_text(self):
         """Sets the model to use the text model."""
-        self.model = genai.GenerativeModel(
-            "gemini-pro", safety_settings=safety_settings
-        )
+        self.model = Groq(api_key=GROQ)
 
     @staticmethod
     def get_prompt(prompt_key: str, **kwargs: str) -> str:
@@ -125,15 +137,18 @@ class Model:
         else:
             prompt = prompts[prompt_key]
 
-        return prompt.strip().format(**kwargs)
+        prompt = prompt.strip().format(**kwargs)
+        prompt += f"\n{get_context()}"
+
+        return prompt
 
     async def prompt(
         self,
         prompt_key: str,
         pic: Image.Image = None,
         resolve: bool = True,
-        **kwargs: str
-    ) -> genai.types.AsyncGenerateContentResponse:
+        **kwargs: str,
+    ) -> str:
         """
         Asynchronously prompts the model.
 
@@ -143,27 +158,50 @@ class Model:
             resolve (bool, optional): Whether to response.resolve(). Defaults to True.
 
         Returns:
-            genai.types.AsyncGenerateContentResponse: The response from the model.
+            str: The response from the model.
         """
         prompt = self.get_prompt(prompt_key, **kwargs)
 
         if pic is not None:
-            prompt = [prompt, pic]
+            prompt = [pic, prompt]
+            generation_config = None
+            if prompt_key == "pic_relevance":
+                generation_config = genai.types.GenerationConfig(
+                    candidate_count=1, stop_sequences=["."], max_output_tokens=3
+                )
+            elif prompt_key == "[search][followup]":
+                generation_config = genai.types.GenerationConfig(
+                    candidate_count=1, stop_sequences=["."], max_output_tokens=10
+                )
 
-        response = await self.model.generate_content_async(prompt)
+            try:
+                response = await self.model.generate_content_async(
+                    prompt, generation_config=generation_config
+                )
+            except InternalServerError as e:
+                print("ERROR", e)
+                print("Trying again...")
+                response = await self.model.generate_content_async(
+                    prompt, generation_config=generation_config
+                )
 
-        if resolve:
-            await response.resolve()
+            if resolve:
+                await response.resolve()
 
-        return response
+            return response.text
+        else:
+            response = self.model.chat.completions.create(
+                messages=[Message(Role.USER, prompt).json(self.model)], model=groq_model
+            )
+            return response.choices[0].message.content
 
     def prompt_sync(
         self,
         prompt_key: str,
         pic: Image.Image = None,
         resolve: bool = True,
-        **kwargs: str
-    ) -> genai.types.AsyncGenerateContentResponse:
+        **kwargs: str,
+    ) -> str:
         """
         Synchronously prompts the model.
 
@@ -173,19 +211,42 @@ class Model:
             resolve (bool, optional): Whether to response.resolve(). Defaults to True.
 
         Returns:
-            genai.types.AsyncGenerateContentResponse: The response from the model.
+            str: The response from the model.
         """
         prompt = self.get_prompt(prompt_key, **kwargs)
 
         if pic is not None:
-            prompt = [prompt, pic]
+            prompt = [pic, prompt]
+            generation_config = None
+            if prompt_key == "pic_relevance":
+                generation_config = genai.types.GenerationConfig(
+                    candidate_count=1, stop_sequences=["."], max_output_tokens=3
+                )
+            elif prompt_key == "[search][followup]":
+                generation_config = genai.types.GenerationConfig(
+                    candidate_count=1, stop_sequences=["."], max_output_tokens=10
+                )
 
-        response = self.model.generate_content(prompt)
+            try:
+                response = self.model.generate_content(
+                    prompt, generation_config=generation_config
+                )
+            except InternalServerError as e:
+                print("ERROR", e)
+                print("Trying again...")
+                response = self.model.generate_content(
+                    prompt, generation_config=generation_config
+                )
 
-        if resolve:
-            response.resolve()
+            if resolve:
+                response.resolve()
 
-        return response
+            return response.text
+        else:
+            response = self.model.chat.completions.create(
+                messages=[Message(Role.USER, prompt).json(self.model)], model=groq_model
+            )
+            return response.choices[0].message.content
 
 
 model = Model()

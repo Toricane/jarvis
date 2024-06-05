@@ -11,4 +11,7 @@ def get_context():
     global context
     context["date"] = datetime.now().strftime("%Y-%m-%d")
     context["time"] = datetime.now().strftime("%H:%M")
-    return context
+    string: str = ""
+    for key, value in context.items():
+        string += f"{key.capitalize()}: {value}\n"
+    return string[:-1]

@@ -15,6 +15,23 @@ speech_recognizer = speechsdk.SpeechRecognizer(speech_config=speech_config)
 speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config)
 
 # print("Say something...")
+ds = 0
+
+
+def start_speaking(*args, **kwargs) -> None:
+    global ds
+    ds += 1
+
+
+def done_speaking(*args, **kwargs):
+    global ds
+    ds = 0
+
+
+# speech_synthesizer.synthesizing.connect(lambda _: print(f"Synthesizing {_}"))
+
+speech_synthesizer.synthesis_started.connect(start_speaking)
+speech_synthesizer.synthesis_completed.connect(done_speaking)
 
 
 def speech_to_text() -> str | None:
@@ -27,14 +44,35 @@ def speech_to_text() -> str | None:
         return
 
 
-def text_to_speech(text: str) -> None:
-    result = speech_synthesizer.speak_text_async(text).get()
-    if result.reason == speechsdk.ResultReason.Canceled:
-        cancellation_details = result.cancellation_details
-        print("Speech synthesis canceled: {}".format(cancellation_details.reason))
-        if cancellation_details.reason == speechsdk.CancellationReason.Error:
-            print("Error details: {}".format(cancellation_details.error_details))
+# def text_to_speech(text: str) -> None:
+#     result = speech_synthesizer.speak_text_async(text).get()
+#     if result.reason == speechsdk.ResultReason.Canceled:
+#         cancellation_details = result.cancellation_details
+#         print("Speech synthesis canceled: {}".format(cancellation_details.reason))
+#         if cancellation_details.reason == speechsdk.CancellationReason.Error:
+#             print("Error details: {}".format(cancellation_details.error_details))
 
+
+def text_to_speech(text: str) -> None:
+    speed = 5
+    ssml = f"""<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="en-CA"><voice name="{speech_config.speech_synthesis_voice_name}"><prosody rate="+{speed}%">{text}</prosody></voice></speak>"""
+
+    try:
+        result = speech_synthesizer.start_speaking_ssml_async(
+            ssml
+        ).get()  # TODO: be able to stop the speech mid-sentence
+
+        if result.reason == speechsdk.ResultReason.Canceled:
+            cancellation_details = result.cancellation_details
+            print("Speech synthesis canceled: {}".format(cancellation_details.reason))
+            if cancellation_details.reason == speechsdk.CancellationReason.Error:
+                print("Error details: {}".format(cancellation_details.error_details))
+    except KeyboardInterrupt:
+        speech_synthesizer.stop_speaking()
+
+
+if __name__ == "__main__":
+    text_to_speech("Hello! I am working.")
 
 # Starts speech recognition, and returns after a single utterance is recognized. The end of a
 # single utterance is determined by listening for silence at the end or until a maximum of 15

@@ -2,12 +2,12 @@ prompts = dict(
     pic_relevance="""
 I have a question: {question}
 
-Is the picture relevant to my question?
+You are seeing what I'm looking at. Is what I'm seeing relevant to my question?
+If I am asking along the lines of "What is this?" or "What is in front of me?" or "Describe what you see" or "See this" or "In front of me," then you should respond with "Yes."
 
 Task:
-Respond with "yes" if the picture is relevant to my question.
-Respond with "no" otherwise.
-No other output is needed.
+Respond with "Yes." if what I'm looking at is relevant to my question.
+Respond with "No." otherwise.
 """,
     to_search="""
 I have a question: {question}
@@ -17,6 +17,7 @@ I want to know whether or not you can answer the question accurately and precise
 For example, if the question is asking with relevant information in an attached photo, then you don't need to search unless you want to search for object names from the photo.
 If it's something conversational, such as "Hello" or something similar, then you don't need to search the internet.
 Use your common sense to see whether you can answer my question without search results.
+Approximations are not preferred if I can search the web and give you information to answer the question with accuracy and precision.
 
 Task:
 Respond with "yes" if you can answer my question without needing my internet search results with accuracy and precision.
@@ -26,14 +27,14 @@ Respond with "no" if you need my internet search results to answer my question w
         no_search="""
 I have a question: {question}
 
-I want you to answer the question to the best of your abilities.
-Keep your answer to the question concise. The plan is that it will be converted from text to speech and spoken to the user. Keep it under 200 words.
+I want you to answer my question to the best of your abilities.
+Keep your answer to my question concise. The plan is that it will be converted from text to speech and spoken to the user. Keep it under 200 words.
 """,
         yes_search="""
 I have a question: {question}
 
-I want you to answer the question using the following search results.
-Keep your answer to the question concise. The plan is that it will be converted from text to speech and spoken to the user. Keep it under 200 words.
+I want you to answer my question using the following search results.
+Keep your answer to my question concise. The plan is that it will be converted from text to speech and spoken to the user. Keep it under 200 words.
 If the search results have multiple dates/times, try to answer with the most recent and accurate data.
 If you find that the search results are not helpful, you can answer it to the best of your ability.
 
@@ -78,13 +79,9 @@ I searched Google for the question and found the following search results:
 '''
 
 If you can answer my question with accuracy and precision, respond with "Yes."
-If you cannot answer my question, but you want more information from a good search result, respond with "More information from website <number of the website>."
-If you think the search results are not helpful, respond with "No."
+If you cannot answer my question, but you want more information from a good search result, respond with "<number of the website>: more information." For example, for website 1, "1: more information." Replace the number accordingly. No additional output is needed. I want only this 1 line of output.
+If you think the search results are not helpful at all for answering the question, respond with "No."
 """,
     ),
     _internal=dict(),
-)
-
-print(
-    prompts["pic_relevance"].strip().format(question="What is the capital of France?")
 )

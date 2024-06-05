@@ -21,7 +21,9 @@ porcupine = pv.create(access_key=getenv("PORCUPINE"), keywords=["jarvis"])
 
 
 def record_and_transcribe(
-    coro: Callable[[str], Awaitable] = None, loop: asyncio.AbstractEventLoop = None
+    coro: Callable[[str], Awaitable] = None,
+    loop: asyncio.AbstractEventLoop = None,
+    superfastconvojarvis: Callable[[], None] = None,
 ):
     """
     Main function to listen and transcribe the speech.
@@ -50,9 +52,10 @@ def record_and_transcribe(
     # Adjust for ambient noise and record audio
     print("Adjusting for ambient noise...")
     with sr.Microphone() as source:
-        recognizer.adjust_for_ambient_noise(source, 3)
+        recognizer.adjust_for_ambient_noise(source, 1)
 
     print("I am ready to record after you say 'Jarvis'. Say 'Jarvis' to activate.")
+    sounds.stt()
 
     try:
         while True:
@@ -83,7 +86,9 @@ def record_and_transcribe(
 
             sounds.stt()
 
-            if coro is not None:
+            if superfastconvojarvis is not None and "conversation mode" in text.lower():
+                superfastconvojarvis()
+            elif coro is not None:
                 if loop is None:
                     asyncio.run(coro(text, pic))
                 else:

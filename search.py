@@ -6,7 +6,8 @@ import google.generativeai as genai
 from pprint import pprint
 from PIL import Image
 from prompts import prompts
-from gemini import Model
+from ai import Model
+from urllib.parse import urlparse, ParseResult
 
 from dotenv import load_dotenv
 from os import getenv
@@ -14,6 +15,17 @@ from os import getenv
 load_dotenv()
 
 GOOGLE_SEARCH: str = getenv("GOOGLE_SEARCH")
+
+
+def get_domain_name(url: str) -> str:
+    parsed_url: ParseResult = urlparse(url)
+    domain: str = parsed_url.netloc
+
+    # Remove 'www.' if present
+    if domain.startswith("www."):
+        domain = domain[4:]
+
+    return domain
 
 
 async def fetch(session: aiohttp.ClientSession, url: str) -> str:
@@ -148,14 +160,15 @@ async def cleanup(question: str, text: str, model: Model, pic) -> str:
     print("Clean up", end=" - ")
     message = "[search][cleanup]"
 
-    response = await model.prompt(message, pic, question=question, text=text)
+    try:
+        response = await model.prompt(message, pic, question=question, text=text)
+    except Exception as e:
+        print("ERROR", e)
+        return
 
     print("Done cleaning up", end=" - ")
 
-    try:
-        return response.text
-    except ValueError:
-        return response.prompt_feedback
+    return response
 
 
 async def search(
@@ -178,7 +191,6 @@ async def search(
         prompt = "[search][search_query]"
 
     search_query = await model.prompt(prompt, pic, question=question)
-    search_query = search_query.text
     print("Search query:", search_query)
     print()
 
@@ -195,7 +207,7 @@ async def search(
     """
     formatted_results = "\n".join(
         [
-            f"{i}: {r['name']}\n{r['url']}\n{r['snippet']}\n"
+            f"{i}: {r['name']}\n{get_domain_name(r['url'])}\n{r['snippet']}\n"
             for i, r in enumerate(results, 1)
         ]
     )
@@ -206,14 +218,19 @@ async def search(
         prompt, pic, question=question, formatted_results=formatted_results
     )
 
-    if "yes" in response.text.lower():
-        print("Yes")
-    elif "more information" in response.text.lower():
-        print("More information")
-        web_num = [
-            num for num in range(1, 11) if str(num) in response.text.split()[-1]
-        ][0] - 1
-        url = results[web_num]["url"]
+    if "yes" in response.lower():
+        print("Yes, the search results are informative enough")
+    elif "more information" in response.lower():
+        print("More information required from the search results")
+        print(response)
+        response = response.lower().split("\n")[0]
+        web_num = int(response.split(":")[0]) - 1
+
+        try:
+            url = results[web_num]["url"]
+        except IndexError:
+            print("Invalid web number")
+            return None, None
         content = await get_main_content(url)
         cleaned_content = await cleanup(question, content, model, pic)
         results[web_num]["content"] = cleaned_content
@@ -225,7 +242,7 @@ async def search(
             ]
         )
     else:
-        print("No")
+        print(f"No, the search results are not informative enough.")
         return None, None
     print("\n\nSearch results:")
     print("--------------------------------------------------")
