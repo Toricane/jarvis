@@ -42,7 +42,8 @@ class AI:
                     + "Don't be cringe. Don't glorify the user, he is your friend. "
                     + f"The user's name is {USER_NAME} and {USER_PRONOUN} is {USER_AGE} years old. "
                     + USER_INFO
-                    + f"{USER_PRONOUN.capitalize()} wants to chat in a {AI_CHAT_STYLE} style."
+                    + f"{USER_PRONOUN.capitalize()} wants to chat in a {AI_CHAT_STYLE} style. "
+                    + "Don't say your name, the user already knows it."
                 ),
             }
         ]
