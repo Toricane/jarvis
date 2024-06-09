@@ -257,7 +257,8 @@ async def search(
         print("\n\nSearch results:")
         print("--------------------------------------------------")
         try:
-            print(formatted_results)
+            print(str(formatted_results, "utf-8"))
+            print("yayayayayayay")
         except Exception:
             if formatted_results:
                 formatted_results_copy = formatted_results.encode("latin-1", "replace")
