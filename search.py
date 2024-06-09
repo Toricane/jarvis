@@ -260,7 +260,7 @@ async def search(
             print(formatted_results)
         except Exception:
             if formatted_results:
-                formatted_results_copy = formatted_results.encode("utf-8")
+                formatted_results_copy = formatted_results.encode("latin-1", "replace")
             print(formatted_results_copy)
         print("--------------------------------------------------")
         return None, None
