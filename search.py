@@ -109,7 +109,8 @@ async def search_google(query: str):
         ]
 
         return contexts[:8]
-    except KeyError:
+    except KeyError as e:
+        raise e
         return []
 
 
