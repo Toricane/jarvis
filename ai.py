@@ -167,11 +167,17 @@ class Model:
             generation_config = None
             if prompt_key == "pic_relevance":
                 generation_config = genai.types.GenerationConfig(
-                    candidate_count=1, stop_sequences=["."], max_output_tokens=3
+                    candidate_count=1,
+                    stop_sequences=["."],
+                    max_output_tokens=3,
+                    temperature=0,
                 )
             elif prompt_key == "[search][followup]":
                 generation_config = genai.types.GenerationConfig(
-                    candidate_count=1, stop_sequences=["."], max_output_tokens=10
+                    candidate_count=1,
+                    stop_sequences=["."],
+                    max_output_tokens=10,
+                    temperature=0,
                 )
 
             try:
