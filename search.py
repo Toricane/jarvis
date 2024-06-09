@@ -74,7 +74,7 @@ async def search_google(query: str):
     """
     json_content = await search_with_serper(query)
     print("Search results......")
-    __import__("pprint").pprint(json_content)
+    __import__("pprint").pprint(json_content.encode("utf-8"))
     try:
         contexts = []
         if json_content.get("knowledgeGraph"):
