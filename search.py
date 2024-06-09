@@ -267,7 +267,7 @@ async def search(
                 )
                 print(formatted_results_copy)
         print("--------------------------------------------------")
-        return None, None
+        # return None, None
     print("\n\nSearch results:")
     print("--------------------------------------------------")
     try:
