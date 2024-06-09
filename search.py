@@ -9,6 +9,7 @@ from prompts import prompts
 from ai import Model
 from urllib.parse import urlparse, ParseResult
 from context import get_context
+import json
 
 from dotenv import load_dotenv
 from os import getenv
@@ -65,6 +66,8 @@ async def search_with_serper(
             url, headers=headers, data=payload, timeout=10
         ) as response:
             json_content = await response.json(encoding="utf-8")
+            json_content = json.dumps(json_content)
+            json_content = json.loads(json_content)
             return json_content
 
 
@@ -73,10 +76,6 @@ async def search_google(query: str):
     Search with serper and return the contexts.
     """
     json_content = await search_with_serper(query)
-    import json
-
-    with open("search.json", "w") as f:
-        json.dump(json_content, f, indent=2)
 
     try:
         contexts = []
@@ -111,12 +110,8 @@ async def search_google(query: str):
             for c in json_content["organic"]
         ]
 
-        with open("search_context.json", "w") as f:
-            json.dump(json_content, f, indent=2)
-
         return contexts[:8]
     except KeyError as e:
-        raise e
         return []
 
 
