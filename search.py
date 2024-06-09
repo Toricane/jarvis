@@ -109,8 +109,7 @@ async def search_google(query: str):
         ]
 
         return contexts[:8]
-    except KeyError as e:
-        print("113", e)
+    except KeyError:
         return []
 
 
@@ -202,6 +201,7 @@ async def search(
 
     # search google
     results: list[dict[str, str]] = await search_google(search_query)
+    print("Results:", bool(results), len(results))
     """
     results = [
         {
