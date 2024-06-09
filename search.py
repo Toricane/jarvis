@@ -248,6 +248,15 @@ async def search(
         )
     else:
         print(f"No, the search results are not informative enough.")
+        print("\n\nSearch results:")
+        print("--------------------------------------------------")
+        try:
+            print(formatted_results)
+        except Exception:
+            if formatted_results:
+                formatted_results_copy = formatted_results.encode("utf-8")
+            print(formatted_results_copy)
+        print("--------------------------------------------------")
         return None, None
     print("\n\nSearch results:")
     print("--------------------------------------------------")
