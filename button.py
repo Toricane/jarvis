@@ -35,7 +35,15 @@ def monitor_button():
         release = time()
         difference = release - press
 
-        if difference > 3:
+        if running:
+            azurespeech.speech_synthesizer.stop_speaking()
+            azurespeech.speech_synthesizer.stop_speaking()
+            azurespeech.speech_synthesizer.stop_speaking()
+            continue
+        else:
+            button_pressed = True
+
+        if difference > 0:
             print("shutting down")
             play_sound("low_sound")
             sleep(1)
@@ -47,13 +55,6 @@ def monitor_button():
             pic = take_pic()
             pic.save(f"photos/{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.jpg")
             continue
-
-        if running:
-            azurespeech.speech_synthesizer.stop_speaking()
-            azurespeech.speech_synthesizer.stop_speaking()
-            azurespeech.speech_synthesizer.stop_speaking()
-        else:
-            button_pressed = True
 
     os.kill(os.getpid(), signal.SIGINT)
 
