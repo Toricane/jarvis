@@ -48,7 +48,9 @@ async def fetch(session: aiohttp.ClientSession, url: str) -> str:
         return ""
 
 
-async def search_with_serper(query: str):
+async def search_with_serper(
+    query: str,
+) -> dict[str, dict[str, str] | list[dict[str, str]]]:
     url = "https://google.serper.dev/search"
     payload = json.dumps(
         {
@@ -87,6 +89,7 @@ async def search_google(query: str):
                     }
                 )
         if json_content.get("answerBox"):
+            print("AnswerBox", json_content["answerBox"])
             url = json_content["answerBox"].get("url")
             snippet = json_content["answerBox"].get("snippet") or json_content[
                 "answerBox"
