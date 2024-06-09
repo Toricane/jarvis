@@ -62,7 +62,7 @@ async def search_with_serper(
 
     async with aiohttp.ClientSession() as session:
         async with session.post(
-            url, headers=headers, data=payload, timeout=5
+            url, headers=headers, data=payload, timeout=10
         ) as response:
             json_content = await response.json(encoding="utf-8")
             return json_content
