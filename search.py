@@ -73,6 +73,8 @@ async def search_google(query: str):
     Search with serper and return the contexts.
     """
     json_content = await search_with_serper(query)
+    print("Search results......")
+    __import__("pprint").pprint(json_content)
     try:
         contexts = []
         if json_content.get("knowledgeGraph"):
