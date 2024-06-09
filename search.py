@@ -262,7 +262,9 @@ async def search(
             print("yayayayayayay")
         except Exception:
             if formatted_results:
-                formatted_results_copy = formatted_results.encode("latin-1", "replace")
+                formatted_results_copy = str(
+                    formatted_results.encode("latin-1", "replace")
+                )
             print(formatted_results_copy)
         print("--------------------------------------------------")
         return None, None
