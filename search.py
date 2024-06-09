@@ -73,6 +73,10 @@ async def search_google(query: str):
     Search with serper and return the contexts.
     """
     json_content = await search_with_serper(query)
+    import json
+
+    with open("search.json", "w") as f:
+        json.dump(json_content, f, indent=2)
 
     try:
         contexts = []
@@ -90,7 +94,6 @@ async def search_google(query: str):
                     }
                 )
         if json_content.get("answerBox"):
-            print("AnswerBox", json_content["answerBox"])
             url = json_content["answerBox"].get("url")
             snippet = json_content["answerBox"].get("snippet") or json_content[
                 "answerBox"
@@ -107,6 +110,9 @@ async def search_google(query: str):
             {"name": c["title"], "url": c["link"], "snippet": c.get("snippet", "")}
             for c in json_content["organic"]
         ]
+
+        with open("search_context.json", "w") as f:
+            json.dump(json_content, f, indent=2)
 
         return contexts[:8]
     except KeyError as e:
