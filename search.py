@@ -258,14 +258,14 @@ async def search(
         print("\n\nSearch results:")
         print("--------------------------------------------------")
         try:
-            print(str(formatted_results, "utf-8", "replace"))
+            print(formatted_results)
             print("yayayayayayay")
         except Exception:
             if formatted_results:
                 formatted_results_copy = str(
                     formatted_results.encode("latin-1", "replace")
                 )
-            print(formatted_results_copy)
+                print(formatted_results_copy)
         print("--------------------------------------------------")
         return None, None
     print("\n\nSearch results:")
@@ -274,7 +274,7 @@ async def search(
         print(formatted_results)
     except Exception:
         if formatted_results:
-            formatted_results_copy = formatted_results.encode("utf-8")
-        print(formatted_results_copy)
+            formatted_results_copy = str(formatted_results.encode("latin-1", "replace"))
+            print(formatted_results_copy)
     print("--------------------------------------------------")
     return formatted_results, results
