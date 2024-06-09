@@ -8,6 +8,7 @@ from PIL import Image
 from prompts import prompts
 from ai import Model
 from urllib.parse import urlparse, ParseResult
+from context import get_context
 
 from dotenv import load_dotenv
 from os import getenv
@@ -215,7 +216,11 @@ async def search(
     prompt = "[search][followup]"
 
     response = await model.prompt(
-        prompt, pic, question=question, formatted_results=formatted_results
+        prompt,
+        pic,
+        question=question,
+        formatted_results=formatted_results,
+        context=get_context(),
     )
 
     if "yes" in response.lower():

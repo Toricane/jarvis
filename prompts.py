@@ -81,6 +81,9 @@ I searched Google for the question and found the following search results:
 If you think you need these search results to answer my question, respond with "Yes."
 If you cannot answer my question, but you want more information from a good search result, respond with "<number of the website>: more information." For example, for website 1, "1: more information." Replace the number accordingly. No additional output is needed. I want only this 1 line of output.
 If you think you don't need these search results for answering the question, respond with "No."
+
+Context:
+{context}
 """,
     ),
     _internal=dict(),
