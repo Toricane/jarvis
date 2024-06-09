@@ -187,9 +187,16 @@ class Model:
             except InternalServerError as e:
                 print("ERROR", e)
                 print("Trying again...")
-                response = await self.model.generate_content_async(
-                    prompt, generation_config=generation_config
-                )
+                try:
+                    response = await self.model.generate_content_async(
+                        prompt, generation_config=generation_config
+                    )
+                except InternalServerError as e:
+                    print("ERROR", e)
+                    print("Trying again...")
+                    response = await self.model.generate_content_async(
+                        prompt, generation_config=generation_config
+                    )
 
             if resolve:
                 await response.resolve()
@@ -240,9 +247,16 @@ class Model:
             except InternalServerError as e:
                 print("ERROR", e)
                 print("Trying again...")
-                response = self.model.generate_content(
-                    prompt, generation_config=generation_config
-                )
+                try:
+                    response = self.model.generate_content(
+                        prompt, generation_config=generation_config
+                    )
+                except InternalServerError as e:
+                    print("ERROR", e)
+                    print("Trying again...")
+                    response = self.model.generate_content(
+                        prompt, generation_config=generation_config
+                    )
 
             if resolve:
                 response.resolve()
