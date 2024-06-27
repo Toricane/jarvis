@@ -60,32 +60,6 @@ class AI:
         thread = None
 
         print("AI: ", end="")
-        # for chunk in stream:
-        #     c: str = chunk.choices[0].delta.content
-        #     if c:
-        #         response += c
-        #         print(c, end="")
-        #         if thread is None:
-        #             if any(c == x for x in (".", "?!", "!?", "!", "?", ":")):
-        #                 full_response = response
-        #                 response = response.strip()
-        #                 thread = threading.Thread(
-        #                     target=text_to_speech, args=(response,)
-        #                 )
-        #                 thread.start()
-        #                 response = ""
-        #         else:
-        #             if (
-        #                 any(c == x for x in (".", "?!", "!?", "!", "?", ":"))
-        #                 and not thread.is_alive()
-        #             ):
-        #                 full_response += response
-        #                 response = response.strip()
-        #                 thread = threading.Thread(
-        #                     target=text_to_speech, args=(response,)
-        #                 )
-        #                 thread.start()
-        #                 response = ""
         for chunk in stream:
             c: str = chunk.choices[0].delta.content
             if c:
