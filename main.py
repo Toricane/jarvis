@@ -173,8 +173,9 @@ async def main(question: str, pic: Image.Image = None):
                 response += c
             x += 1
     except StopIteration:
-        print(f"\n\n!! StopIteration {x} !!\n\n")
         pass
+
+    print(f"\n\n!! StopIteration {x} !!\n\n")
 
     full_response += response
     response = response.strip()
