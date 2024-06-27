@@ -145,16 +145,17 @@ async def main(question: str, pic: Image.Image = None):
                 print("UnicodeEncodeError")
             if thread is None:
                 base_endings = [".", "?!", "!?", "!", "?", ":"]
-                complete_endings = [*base_endings]
+                complete_endings = []
                 complete_endings.extend([f"{x} " for x in base_endings])
                 complete_endings.extend([f"{x}\n" for x in base_endings])
+                complete_endings.extend(base_endings)
                 for x in complete_endings:
                     if not response.endswith(x):
                         continue
                     response1, response = response.rsplit(x, 1)
                     response1 += x
                     full_response = response1
-                    response1 = response1.strip()
+                    response1: str = response1.strip()
                     thread = threading.Thread(target=text_to_speech, args=(response1,))
                     thread.start()
 
