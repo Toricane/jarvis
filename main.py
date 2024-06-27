@@ -232,6 +232,7 @@ async def main(question: str, pic: Image.Image = None):
 
         azurespeech.ds = 0
         button.running = True
+        print("response: ", response)
         text_to_speech(response)
         counter = 0
 
