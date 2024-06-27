@@ -21,6 +21,8 @@ import button
 import threading
 from google.api_core.exceptions import InternalServerError
 from superfastconvo import superfastconvo_record_and_transcribe
+from groq import Stream
+from google.generativeai.types import GenerateContentResponse
 
 from setup_logging import logger
 
@@ -99,119 +101,31 @@ async def main(question: str, pic: Image.Image = None):
     prompt = model.get_prompt(final_message, **params)
 
     if pic is None:
-        stream = model.model.chat.completions.create(
+        stream: Stream = model.model.chat.completions.create(
             messages=[Message(Role.USER, prompt).json(model.model)],
             model=model.groq_model,
             stream=True,
         )
-
-        # response: str = ""
-        # full_response: str = ""
-        # thread = None
-
-        # print("AI: ", end="")
-        # for chunk in stream:
-        #     c: str = chunk.choices[0].delta.content
-        #     if c:
-        #         response += c
-        #         try:
-        #             print(c, end="")
-        #         except UnicodeEncodeError:
-        #             print("UnicodeEncodeError")
-        #         if thread is None:
-        #             if any(c == x or x in c for x in (".", "?!", "!?", "!", "?", ":")):
-        #                 full_response = response
-        #                 response = response.strip()
-        #                 thread = threading.Thread(
-        #                     target=text_to_speech, args=(response,)
-        #                 )
-        #                 thread.start()
-        #                 response = ""
-
-        # if thread is not None:
-        #     thread.join()
-
-        # full_response += response
-        # response = response.strip()
-
-        # azurespeech.ds = 0
-        # button.running = True
-        # text_to_speech(response)
-        # counter = 0
-
-        # while counter < 10:
-        #     if azurespeech.ds == 0:
-        #         counter += 1
-        #     else:
-        #         counter = 0
-        #     sleep(0.1)
-
-        # azurespeech.ds = 0
-
-        # if not full_response.strip():
-        #     # TODO: find out why sometimes the response is empty
-        #     print(stream.response)
     else:
         prompt = [pic, prompt]
 
         try:
-            stream = model.model.generate_content(prompt, stream=True)
+            stream: GenerateContentResponse = model.model.generate_content(
+                prompt, stream=True
+            )
         except InternalServerError as e:
             print("ERROR", e)
             print("Trying again...")
             try:
-                stream = model.model.generate_content(prompt, stream=True)
+                stream: GenerateContentResponse = model.model.generate_content(
+                    prompt, stream=True
+                )
             except InternalServerError as e:
                 print("ERROR", e)
                 print("Trying again...")
-                stream = model.model.generate_content(prompt, stream=True)
-
-        # response: str = ""
-        # full_response: str = ""
-        # thread = None
-
-        # print("AI: ", end="")
-        # for chunk in stream:
-        #     c: str = chunk.text
-        #     if c:
-        #         response += c
-        #         try:
-        #             print(c, end="")
-        #         except UnicodeEncodeError:
-        #             print("UnicodeEncodeError")
-        #         if thread is None:
-        #             if any(c == x or x in c for x in (".", "?!", "!?", "!", "?", ":")):
-        #                 full_response = response
-        #                 response = response.strip()
-        #                 thread = threading.Thread(
-        #                     target=text_to_speech, args=(response,)
-        #                 )
-        #                 thread.start()
-        #                 response = ""
-
-        # if thread is not None:
-        #     thread.join()
-
-        # full_response += response
-        # response = response.strip()
-
-        # azurespeech.ds = 0
-        # button.running = True
-        # text_to_speech(response)
-        # counter = 0
-
-        # while counter < 10:
-        #     if azurespeech.ds == 0:
-        #         counter += 1
-        #     else:
-        #         counter = 0
-        #     sleep(0.1)
-
-        # azurespeech.ds = 0
-
-        # if not full_response.strip():
-        #     # TODO: find out why sometimes the response is empty
-        #     print(stream.response)
+                stream: GenerateContentResponse = model.model.generate_content(
+                    prompt, stream=True
+                )
 
     response: str = ""
     full_response: str = ""
@@ -239,6 +153,18 @@ async def main(question: str, pic: Image.Image = None):
 
     if thread is not None:
         thread.join()
+
+    try:
+        while True:
+            chunk = next(stream)
+            if pic is None:
+                c: str = chunk.choices[0].delta.content
+            else:
+                c: str = chunk.text
+            if c:
+                response += c
+    except StopIteration:
+        pass
 
     full_response += response
     response = response.strip()
