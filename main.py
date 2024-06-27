@@ -144,12 +144,19 @@ async def main(question: str, pic: Image.Image = None):
             except UnicodeEncodeError:
                 print("UnicodeEncodeError")
             if thread is None:
-                if any(c == x or x in c for x in (".", "?!", "!?", "!", "?", ":")):
-                    full_response = response
-                    response = response.strip()
-                    thread = threading.Thread(target=text_to_speech, args=(response,))
+                base_endings = [".", "?!", "!?", "!", "?", ":"]
+                complete_endings = [*base_endings]
+                complete_endings.extend([f"{x} " for x in base_endings])
+                complete_endings.extend([f"{x}\n" for x in base_endings])
+                for x in complete_endings:
+                    if not response.endswith(x):
+                        continue
+                    response1, response = response.rsplit(x, 1)
+                    response1 += x
+                    full_response = response1
+                    response1 = response1.strip()
+                    thread = threading.Thread(target=text_to_speech, args=(response1,))
                     thread.start()
-                    response = ""
 
     if thread is not None:
         thread.join()
@@ -165,7 +172,7 @@ async def main(question: str, pic: Image.Image = None):
                 response += c
             x += 1
     except StopIteration:
-        print(f"!! StopIteration {x} !!")
+        print(f"\n\n!! StopIteration {x} !!\n\n")
         pass
 
     full_response += response
