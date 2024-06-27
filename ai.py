@@ -181,7 +181,7 @@ class Model:
         if pic is not None:
             prompt = [pic, prompt]
             generation_config = None
-            if prompt_key == "pic_relevance":
+            if prompt_key in ("pic_relevance", "to_search"):
                 generation_config = genai.types.GenerationConfig(
                     candidate_count=1,
                     stop_sequences=["."],
