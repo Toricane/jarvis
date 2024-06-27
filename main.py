@@ -65,7 +65,7 @@ async def main(question: str, pic: Image.Image = None):
         pic (Image.Image, optional): The photo from the camera. Defaults to None.
     """
     logger.info("Main function running")
-    # button.running = True
+
     global model
 
     model.use_vision()
@@ -162,21 +162,6 @@ async def main(question: str, pic: Image.Image = None):
     if thread is not None:
         thread.join()
 
-    # x = 0
-    # try:
-    #     for chunk in stream:
-    #         if pic is None:
-    #             c: str = chunk.choices[0].delta.content
-    #         else:
-    #             c: str = chunk.text
-    #         if c:
-    #             response += c
-    #         x += 1
-    # except StopIteration:
-    #     pass
-
-    # print(f"\n\n!! StopIteration {x} !!\n\n")
-
     full_response += response
     response = response.strip()
 
@@ -215,8 +200,6 @@ async def test(question: str, pic: Image.Image = None) -> None:
     ...
 
 
-# wait_for_button()
-
 loop = asyncio.new_event_loop()
 start_monitoring()
 
@@ -232,7 +215,7 @@ except (KeyboardInterrupt, ThreadKeyboardInterrupt):
 cam.close()
 loop.run_until_complete(shutdown(loop))
 play_sound("low_sound")
-sleep(1)
+sleep(0.5)
 play_sound("low_sound")
-sleep(1)
+sleep(0.5)
 logger.info("Exited")
