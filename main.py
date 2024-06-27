@@ -150,7 +150,7 @@ async def main(question: str, pic: Image.Image = None):
                 complete_endings.extend([f"{x}\n" for x in base_endings])
                 complete_endings.extend(base_endings)
                 for x in complete_endings:
-                    if not response.endswith(x):
+                    if not x in response:
                         continue
                     response1, response = response.rsplit(x, 1)
                     response1 += x
