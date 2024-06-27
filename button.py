@@ -43,10 +43,10 @@ def monitor_button():
         else:
             button_pressed = True
 
-        if difference > 0:
+        if difference > 3:
             print("shutting down")
             play_sound("low_sound")
-            sleep(1)
+            sleep(0.5)
             break
 
         if difference > 0.6:
