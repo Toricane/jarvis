@@ -154,16 +154,18 @@ async def main(question: str, pic: Image.Image = None):
     if thread is not None:
         thread.join()
 
+    x = 0
     try:
-        while True:
-            chunk = next(stream)
+        for chunk in stream:
             if pic is None:
                 c: str = chunk.choices[0].delta.content
             else:
                 c: str = chunk.text
             if c:
                 response += c
+            x += 1
     except StopIteration:
+        print(f"!! StopIteration {x} !!")
         pass
 
     full_response += response
