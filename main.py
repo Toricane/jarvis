@@ -138,18 +138,18 @@ async def main(question: str, pic: Image.Image = None):
                         )
                         thread.start()
                         response = ""
-                else:
-                    if (
-                        any(c == x or x in c for x in (".", "?!", "!?", "!", "?", ":"))
-                        and not thread.is_alive()
-                    ):
-                        full_response += response
-                        response = response.strip()
-                        thread = threading.Thread(
-                            target=text_to_speech, args=(response,)
-                        )
-                        thread.start()
-                        response = ""
+                # else:
+                #     if (
+                #         any(c == x or x in c for x in (".", "?!", "!?", "!", "?", ":"))
+                #         and not thread.is_alive()
+                #     ):
+                #         full_response += response
+                #         response = response.strip()
+                #         thread = threading.Thread(
+                #             target=text_to_speech, args=(response,)
+                #         )
+                #         thread.start()
+                #         response = ""
 
         if thread is not None:
             thread.join()
@@ -211,18 +211,18 @@ async def main(question: str, pic: Image.Image = None):
                         )
                         thread.start()
                         response = ""
-                else:
-                    if (
-                        any(c == x or x in c for x in (".", "?!", "!?", "!", "?", ":"))
-                        and not thread.is_alive()
-                    ):
-                        full_response += response
-                        response = response.strip()
-                        thread = threading.Thread(
-                            target=text_to_speech, args=(response,)
-                        )
-                        thread.start()
-                        response = ""
+                # else:
+                #     if (
+                #         any(c == x or x in c for x in (".", "?!", "!?", "!", "?", ":"))
+                #         and not thread.is_alive()
+                #     ):
+                #         full_response += response
+                #         response = response.strip()
+                #         thread = threading.Thread(
+                #             target=text_to_speech, args=(response,)
+                #         )
+                #         thread.start()
+                #         response = ""
 
         if thread is not None:
             thread.join()
