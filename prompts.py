@@ -29,6 +29,7 @@ I have a question: {question}
 
 I want you to answer my question to the best of your abilities.
 Keep your answer to my question concise. The plan is that it will be converted from text to speech and spoken to the user. Keep it under 200 words.
+Don't start your response with "Here is the answer to your question." or something similar. Just answer the question.
 """,
         yes_search="""
 I have a question: {question}
@@ -37,6 +38,7 @@ I want you to answer my question using the following search results.
 Keep your answer to my question concise. The plan is that it will be converted from text to speech and spoken to the user. Keep it under 200 words.
 If the search results have multiple dates/times, try to answer with the most recent and accurate data.
 If you find that the search results are not helpful, you can answer it to the best of your ability.
+Don't start your response with "Here is the answer to your question." or something similar. Just answer the question.
 
 Here are some search results that you can use to answer my question:
 '''
@@ -78,9 +80,12 @@ I searched Google for the question and found the following search results:
 {formatted_results}
 '''
 
-If you can answer my question with accuracy and precision, respond with "Yes."
-If you cannot answer my question, but you want more information from a good search result, respond with "<number of the website>: more information." For example, for website 1, "1: more information." Replace the number accordingly. No additional output is needed. I want only this 1 line of output.
-If you think the search results are not helpful at all for answering the question, respond with "No."
+If you think you need these search results to answer my question, respond with "Yes."
+If you cannot answer my question, but you want more information from a good search result, start your response with "<number of the website>: more information." For example, for website 1, "1: more information." Replace the number accordingly. No additional output is needed about your reasoning. I want only this 1 line of output.
+If you think you don't need these search results for answering the question, respond with "No."
+
+Context:
+{context}
 """,
     ),
     _internal=dict(),

@@ -21,6 +21,8 @@ import button
 import threading
 from google.api_core.exceptions import InternalServerError
 from superfastconvo import superfastconvo_record_and_transcribe
+from groq import Stream
+from google.generativeai.types import GenerateContentResponse
 
 from setup_logging import logger
 
@@ -63,7 +65,7 @@ async def main(question: str, pic: Image.Image = None):
         pic (Image.Image, optional): The photo from the camera. Defaults to None.
     """
     logger.info("Main function running")
-    # button.running = True
+
     global model
 
     model.use_vision()
@@ -95,159 +97,91 @@ async def main(question: str, pic: Image.Image = None):
             params["formatted_search_contents"] = formatted_search_contents
             final_message = "[final_prompts][yes_search]"
 
-    # logger.debug("Generating final response")
-    # final_response = model.prompt_sync(final_message, pic, **params)
-    # logger.debug("Final response generated")
-    # print()
+    model.choose_model_from(pic)
+    prompt = model.get_prompt(final_message, **params)
 
-    # # async for chunk in final_response:
-    # #     print(chunk.text, end="")
-
-    # # queue.put(final_response.text)
-    # print(final_response.replace("**", ""))
-
-    # azurespeech.text_to_speech(final_response.replace("**", ""))
     if pic is None:
-        model.choose_model_from(pic)
-        prompt = model.get_prompt(final_message, **params)
-        stream = model.model.chat.completions.create(
+        stream: Stream = model.model.chat.completions.create(
             messages=[Message(Role.USER, prompt).json(model.model)],
             model=model.groq_model,
             stream=True,
         )
-
-        response: str = ""
-        full_response: str = ""
-        thread = None
-
-        print("AI: ", end="")
-        for chunk in stream:
-            c: str = chunk.choices[0].delta.content
-            if c:
-                response += c
-                try:
-                    print(c, end="")
-                except UnicodeEncodeError:
-                    print("UnicodeEncodeError")
-                if thread is None:
-                    if any(c == x or x in c for x in (".", "?!", "!?", "!", "?", ":")):
-                        full_response = response
-                        response = response.strip()
-                        thread = threading.Thread(
-                            target=text_to_speech, args=(response,)
-                        )
-                        thread.start()
-                        response = ""
-                else:
-                    if (
-                        any(c == x or x in c for x in (".", "?!", "!?", "!", "?", ":"))
-                        and not thread.is_alive()
-                    ):
-                        full_response += response
-                        response = response.strip()
-                        thread = threading.Thread(
-                            target=text_to_speech, args=(response,)
-                        )
-                        thread.start()
-                        response = ""
-
-        if thread is not None:
-            thread.join()
-
-        full_response += response
-        response = response.strip()
-
-        azurespeech.ds = 0
-        button.running = True
-        text_to_speech(response)
-        counter = 0
-
-        while counter < 10:
-            if azurespeech.ds == 0:
-                counter += 1
-            else:
-                counter = 0
-            sleep(0.1)
-
-        azurespeech.ds = 0
-
-        # azurespeech.done_speaking = False
-
-        if not full_response.strip():
-            # TODO: find out why sometimes the response is empty
-            print(stream.response)
     else:
-        model.choose_model_from(pic)
-        prompt = model.get_prompt(final_message, **params)
         prompt = [pic, prompt]
 
         try:
-            stream = model.model.generate_content(prompt, stream=True)
+            stream: GenerateContentResponse = model.model.generate_content(
+                prompt, stream=True
+            )
         except InternalServerError as e:
             print("ERROR", e)
             print("Trying again...")
-            stream = model.model.generate_content(prompt, stream=True)
+            try:
+                stream: GenerateContentResponse = model.model.generate_content(
+                    prompt, stream=True
+                )
+            except InternalServerError as e:
+                print("ERROR", e)
+                print("Trying again...")
+                stream: GenerateContentResponse = model.model.generate_content(
+                    prompt, stream=True
+                )
 
-        response: str = ""
-        full_response: str = ""
-        thread = None
+    response: str = ""
+    full_response: str = ""
+    thread = None
 
-        print("AI: ", end="")
-        for chunk in stream:
+    print("AI: ", end="")
+    for chunk in stream:
+        if pic is None:
+            c: str = chunk.choices[0].delta.content
+        else:
             c: str = chunk.text
-            if c:
-                response += c
-                try:
-                    print(c, end="")
-                except UnicodeEncodeError:
-                    print("UnicodeEncodeError")
-                if thread is None:
-                    if any(c == x or x in c for x in (".", "?!", "!?", "!", "?", ":")):
-                        full_response = response
-                        response = response.strip()
-                        thread = threading.Thread(
-                            target=text_to_speech, args=(response,)
-                        )
-                        thread.start()
-                        response = ""
-                else:
-                    if (
-                        any(c == x or x in c for x in (".", "?!", "!?", "!", "?", ":"))
-                        and not thread.is_alive()
-                    ):
-                        full_response += response
-                        response = response.strip()
-                        thread = threading.Thread(
-                            target=text_to_speech, args=(response,)
-                        )
-                        thread.start()
-                        response = ""
+        if c:
+            response += c
+            try:
+                print(c, end="")
+            except UnicodeEncodeError:
+                print("UnicodeEncodeError")
+            if thread is None:
+                base_endings = [".", "?!", "!?", "!", "?", ":"]
+                complete_endings = []
+                complete_endings.extend([f"{x} " for x in base_endings])
+                complete_endings.extend([f"{x}\n" for x in base_endings])
+                complete_endings.extend(base_endings)
+                for x in complete_endings:
+                    if not x in response:
+                        continue
+                    response1, response = response.rsplit(x, 1)
+                    response1 += x
+                    full_response = response1
+                    response1: str = response1.strip()
+                    thread = threading.Thread(target=text_to_speech, args=(response1,))
+                    thread.start()
 
-        if thread is not None:
-            thread.join()
+    if thread is not None:
+        thread.join()
 
-        full_response += response
-        response = response.strip()
+    full_response += response
+    response = response.strip()
 
-        azurespeech.ds = 0
-        button.running = True
-        text_to_speech(response)
-        counter = 0
+    azurespeech.ds = 0
+    button.running = True
+    text_to_speech(response)
+    counter = 0
 
-        while counter < 10:
-            if azurespeech.ds == 0:
-                counter += 1
-            else:
-                counter = 0
-            sleep(0.1)
+    while counter < 10:
+        if azurespeech.ds == 0:
+            counter += 1
+        else:
+            counter = 0
+        sleep(0.1)
 
-        azurespeech.ds = 0
+    azurespeech.ds = 0
 
-        # azurespeech.done_speaking = False
-
-        if not full_response.strip():
-            # TODO: find out why sometimes the response is empty
-            print(stream.response)
+    if not full_response.strip():
+        # TODO: find out why sometimes the response is empty
+        print(stream.response)
 
     print()
     button.running = False
@@ -266,8 +200,6 @@ async def test(question: str, pic: Image.Image = None) -> None:
     ...
 
 
-# wait_for_button()
-
 loop = asyncio.new_event_loop()
 start_monitoring()
 
@@ -283,7 +215,7 @@ except (KeyboardInterrupt, ThreadKeyboardInterrupt):
 cam.close()
 loop.run_until_complete(shutdown(loop))
 play_sound("low_sound")
-sleep(1)
+sleep(0.5)
 play_sound("low_sound")
-sleep(1)
+sleep(0.75)
 logger.info("Exited")

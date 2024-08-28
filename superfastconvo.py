@@ -42,7 +42,9 @@ class AI:
                     + "Don't be cringe. Don't glorify the user, he is your friend. "
                     + f"The user's name is {USER_NAME} and {USER_PRONOUN} is {USER_AGE} years old. "
                     + USER_INFO
-                    + f"{USER_PRONOUN.capitalize()} wants to chat in a {AI_CHAT_STYLE} style."
+                    + f"{USER_PRONOUN.capitalize()} wants to chat in a {AI_CHAT_STYLE} style. "
+                    + "Don't say your name, the user already knows it. "
+                    + 'One more thing, when ending the conversation, include the word "bye" in your response.'
                 ),
             }
         ]
@@ -62,28 +64,27 @@ class AI:
             c: str = chunk.choices[0].delta.content
             if c:
                 response += c
-                print(c, end="")
+                try:
+                    print(c, end="")
+                except UnicodeEncodeError:
+                    print("UnicodeEncodeError")
                 if thread is None:
-                    if any(c == x for x in (".", "?!", "!?", "!", "?", ":")):
-                        full_response = response
-                        response = response.strip()
+                    base_endings = [".", "?!", "!?", "!", "?", ":"]
+                    complete_endings = []
+                    complete_endings.extend([f"{x} " for x in base_endings])
+                    complete_endings.extend([f"{x}\n" for x in base_endings])
+                    complete_endings.extend(base_endings)
+                    for x in complete_endings:
+                        if not x in response:
+                            continue
+                        response1, response = response.rsplit(x, 1)
+                        response1 += x
+                        full_response = response1
+                        response1: str = response1.strip()
                         thread = threading.Thread(
-                            target=text_to_speech, args=(response,)
+                            target=text_to_speech, args=(response1,)
                         )
                         thread.start()
-                        response = ""
-                else:
-                    if (
-                        any(c == x for x in (".", "?!", "!?", "!", "?", ":"))
-                        and not thread.is_alive()
-                    ):
-                        full_response += response
-                        response = response.strip()
-                        thread = threading.Thread(
-                            target=text_to_speech, args=(response,)
-                        )
-                        thread.start()
-                        response = ""
 
         if thread is not None:
             thread.join()

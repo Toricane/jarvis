@@ -1,17 +1,18 @@
 from datetime import datetime
 
 context = {
-    "location": "Vancouver, BC, Canada",
+    # "location": "Vancouver, BC, Canada",
     "date": datetime.now().strftime("%Y-%m-%d"),
     "time": datetime.now().strftime("%H:%M"),
 }
 
 
-def get_context():
+def get_context() -> str:
     global context
     context["date"] = datetime.now().strftime("%Y-%m-%d")
     context["time"] = datetime.now().strftime("%H:%M")
     string: str = ""
     for key, value in context.items():
         string += f"{key.capitalize()}: {value}\n"
+    # return ""
     return string[:-1]

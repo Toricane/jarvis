@@ -8,6 +8,8 @@ from PIL import Image
 from prompts import prompts
 from ai import Model
 from urllib.parse import urlparse, ParseResult
+from context import get_context
+import json
 
 from dotenv import load_dotenv
 from os import getenv
@@ -47,7 +49,9 @@ async def fetch(session: aiohttp.ClientSession, url: str) -> str:
         return ""
 
 
-async def search_with_serper(query: str):
+async def search_with_serper(
+    query: str,
+) -> dict[str, dict[str, str] | list[dict[str, str]]]:
     url = "https://google.serper.dev/search"
     payload = json.dumps(
         {
@@ -59,9 +63,11 @@ async def search_with_serper(query: str):
 
     async with aiohttp.ClientSession() as session:
         async with session.post(
-            url, headers=headers, data=payload, timeout=5
+            url, headers=headers, data=payload, timeout=10
         ) as response:
-            json_content = await response.json()
+            json_content = await response.json(encoding="utf-8")
+            json_content = json.dumps(json_content)
+            json_content = json.loads(json_content)
             return json_content
 
 
@@ -70,6 +76,7 @@ async def search_google(query: str):
     Search with serper and return the contexts.
     """
     json_content = await search_with_serper(query)
+
     try:
         contexts = []
         if json_content.get("knowledgeGraph"):
@@ -104,7 +111,7 @@ async def search_google(query: str):
         ]
 
         return contexts[:8]
-    except KeyError:
+    except KeyError as e:
         return []
 
 
@@ -196,6 +203,7 @@ async def search(
 
     # search google
     results: list[dict[str, str]] = await search_google(search_query)
+    print("Results:", bool(results), len(results))
     """
     results = [
         {
@@ -215,7 +223,11 @@ async def search(
     prompt = "[search][followup]"
 
     response = await model.prompt(
-        prompt, pic, question=question, formatted_results=formatted_results
+        prompt,
+        pic,
+        question=question,
+        formatted_results=formatted_results,
+        context=get_context(),
     )
 
     if "yes" in response.lower():
@@ -243,14 +255,26 @@ async def search(
         )
     else:
         print(f"No, the search results are not informative enough.")
-        return None, None
+        print("\n\nSearch results:")
+        print("--------------------------------------------------")
+        try:
+            print(formatted_results)
+            print("yayayayayayay")
+        except Exception:
+            if formatted_results:
+                formatted_results_copy = str(
+                    formatted_results.encode("latin-1", "replace")
+                )
+                print(formatted_results_copy)
+        print("--------------------------------------------------")
+        # return None, None
     print("\n\nSearch results:")
     print("--------------------------------------------------")
     try:
         print(formatted_results)
     except Exception:
         if formatted_results:
-            formatted_results_copy = formatted_results.encode("utf-8")
-        print(formatted_results_copy)
+            formatted_results_copy = str(formatted_results.encode("latin-1", "replace"))
+            print(formatted_results_copy)
     print("--------------------------------------------------")
     return formatted_results, results

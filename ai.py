@@ -22,10 +22,26 @@ groq_model = "llama3-70b-8192"
 
 # don't want error due to 'safety' from gemini
 safety_settings = [
-    {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_ONLY_HIGH"},
-    {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_ONLY_HIGH"},
-    {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_ONLY_HIGH"},
-    {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_ONLY_HIGH"},
+    {
+        "category": "HARM_CATEGORY_DANGEROUS",
+        "threshold": "BLOCK_NONE",
+    },
+    {
+        "category": "HARM_CATEGORY_HARASSMENT",
+        "threshold": "BLOCK_NONE",
+    },
+    {
+        "category": "HARM_CATEGORY_HATE_SPEECH",
+        "threshold": "BLOCK_NONE",
+    },
+    {
+        "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+        "threshold": "BLOCK_NONE",
+    },
+    {
+        "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+        "threshold": "BLOCK_NONE",
+    },
 ]
 
 
@@ -165,25 +181,44 @@ class Model:
         if pic is not None:
             prompt = [pic, prompt]
             generation_config = None
-            if prompt_key == "pic_relevance":
+            if prompt_key in ("pic_relevance", "to_search"):
                 generation_config = genai.types.GenerationConfig(
-                    candidate_count=1, stop_sequences=["."], max_output_tokens=3
+                    candidate_count=1,
+                    stop_sequences=["."],
+                    max_output_tokens=3,
+                    temperature=0,
                 )
             elif prompt_key == "[search][followup]":
                 generation_config = genai.types.GenerationConfig(
-                    candidate_count=1, stop_sequences=["."], max_output_tokens=10
+                    candidate_count=1,
+                    stop_sequences=["."],
+                    max_output_tokens=10,
+                    temperature=0,
                 )
 
             try:
                 response = await self.model.generate_content_async(
-                    prompt, generation_config=generation_config
+                    prompt,
+                    generation_config=generation_config,
+                    safety_settings=safety_settings,
                 )
             except InternalServerError as e:
                 print("ERROR", e)
                 print("Trying again...")
-                response = await self.model.generate_content_async(
-                    prompt, generation_config=generation_config
-                )
+                try:
+                    response = await self.model.generate_content_async(
+                        prompt,
+                        generation_config=generation_config,
+                        safety_settings=safety_settings,
+                    )
+                except InternalServerError as e:
+                    print("ERROR", e)
+                    print("Trying again...")
+                    response = await self.model.generate_content_async(
+                        prompt,
+                        generation_config=generation_config,
+                        safety_settings=safety_settings,
+                    )
 
             if resolve:
                 await response.resolve()
@@ -229,14 +264,27 @@ class Model:
 
             try:
                 response = self.model.generate_content(
-                    prompt, generation_config=generation_config
+                    prompt,
+                    generation_config=generation_config,
+                    safety_settings=safety_settings,
                 )
             except InternalServerError as e:
                 print("ERROR", e)
                 print("Trying again...")
-                response = self.model.generate_content(
-                    prompt, generation_config=generation_config
-                )
+                try:
+                    response = self.model.generate_content(
+                        prompt,
+                        generation_config=generation_config,
+                        safety_settings=safety_settings,
+                    )
+                except InternalServerError as e:
+                    print("ERROR", e)
+                    print("Trying again...")
+                    response = self.model.generate_content(
+                        prompt,
+                        generation_config=generation_config,
+                        safety_settings=safety_settings,
+                    )
 
             if resolve:
                 response.resolve()
